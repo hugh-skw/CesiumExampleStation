@@ -78,7 +78,7 @@ export function roadRapidEffect(viewer: Cesium.Viewer, duration: number, image: 
 
 	Cesium.GeoJsonDataSource.load("/static/shaderNeeds/gaochun_xianshengdao_route1.geojson").then((dataSource) => {
 		viewer.dataSources.add(dataSource);
-		const entitiesArr = dataSource.entities.values;
+		const entitiesArr: any = dataSource.entities.values;
 		for (let i = 0; i < entitiesArr.length; i++) {
 			const entity = entitiesArr[i];
 			entity.polyline.width = 1;

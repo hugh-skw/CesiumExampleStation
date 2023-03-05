@@ -16,15 +16,14 @@
 				<el-menu-item-group>
 					<template #title><span>Group One</span></template>
 					<el-menu-item index="1-1" @click="createShaderMaterial('1-1')">道路穿梭线</el-menu-item>
-					<el-menu-item index="1-2" @click="createShaderMaterial('1-2')">抛物流动飞线</el-menu-item>
+					<el-menu-item index="1-2" @click="createShaderMaterial('1-2')">道路闪烁线</el-menu-item>
+					<el-menu-item index="1-3" @click="createShaderMaterial('1-3')">抛物流动飞线</el-menu-item>
 				</el-menu-item-group>
 				<el-menu-item-group title="Group Two">
-					<el-menu-item index="1-3">item three</el-menu-item>
+					<el-menu-item index="1-4" @click="createShaderMaterial('1-4')">雨天</el-menu-item>
+					<el-menu-item index="1-5" @click="createShaderMaterial('1-5')">雪天</el-menu-item>
+					<el-menu-item index="1-6" @click="createShaderMaterial('1-6')">雾天</el-menu-item>
 				</el-menu-item-group>
-				<el-sub-menu index="1-4">
-					<template #title><span>item four</span></template>
-					<el-menu-item index="1-4-1">item one</el-menu-item>
-				</el-sub-menu>
 			</el-sub-menu>
 			<el-menu-item index="2">
 				<i class="iconfont icon-moxingtiaodu menuItab" />
@@ -39,9 +38,12 @@
 </template>
 
 <script lang="ts" setup>
-import { parabolaFlowInit, roadRapidEffect } from "@/utils/shaders";
+import * as Cesium from "cesium";
+import { parabolaFlowInit, roadRapidEffect, lineFlickerMaterial, startRain } from "@/utils/shaders";
 import { ref, getCurrentInstance } from "vue";
 const { proxy } = getCurrentInstance() as any; //获取上下文实例，ctx=vue2的this
+
+let rain: any = null;
 const createShaderMaterial = (type: string) => {
 	switch (type) {
 		case "1-1":
@@ -55,12 +57,46 @@ const createShaderMaterial = (type: string) => {
 		case "1-2":
 			proxy.$message({
 				type: "success",
+				message: "道路穿梭线",
+				duration: 3000,
+			});
+			lineFlickerMaterial(
+				window.viewer,
+				Cesium.Color.YELLOW,
+				// 设置随机变化速度
+				20 * Math.random()
+			);
+			break;
+		case "1-3":
+			if (rain) {
+				rain.destroy();
+				rain = null;
+			}
+			proxy.$message({
+				type: "success",
 				message: "抛物流动飞线",
 				duration: 3000,
 			});
 			parabolaFlowInit(window.viewer, 5, "in");
 			break;
+		case "1-4":
+			proxy.$message({
+				type: "success",
+				message: "雨天",
+				duration: 3000,
+			});
+			rain = startRain(window.viewer, {
+				tiltAngle: -0.6, //倾斜角度
+				rainSize: 0.6, // 雨大小
+				rainSpeed: 120.0, // 雨速
+			});
+			break;
 		default:
+			proxy.$message({
+				type: "warning",
+				message: "开发中~~~~~",
+				duration: 3000,
+			});
 	}
 };
 
