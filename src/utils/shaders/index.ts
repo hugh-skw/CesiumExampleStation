@@ -12,4 +12,5 @@ import { lineFlickerMaterial } from "./lineFlicker.js";
 import { startRain } from "./rainEffect.js";
 import { startSnow } from "./snowEffect.js";
 import { startFog } from "./fogEffect.js";
-export { parabolaFlowInit, roadRapidEffect, lineFlickerMaterial, startRain, startSnow, startFog };
+import { dynamicWall } from "./dynamicWallMaterial.js";
+export { parabolaFlowInit, roadRapidEffect, lineFlickerMaterial, startRain, startSnow, startFog, dynamicWall };

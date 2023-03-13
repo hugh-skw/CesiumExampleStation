@@ -24,6 +24,12 @@
 					<el-menu-item index="1-5" @click="createShaderMaterial('1-5')">道路闪烁线</el-menu-item>
 					<el-menu-item index="1-6" @click="createShaderMaterial('1-6')">抛物流动飞线</el-menu-item>
 				</el-menu-item-group>
+				<el-menu-item-group>
+					<template #title><span>墙</span></template>
+					<el-menu-item index="1-7" @click="createShaderMaterial('1-7')">动态立体墙</el-menu-item>
+					<el-menu-item index="1-8" @click="createShaderMaterial('1-8')">道路闪烁线</el-menu-item>
+					<el-menu-item index="1-9" @click="createShaderMaterial('1-9')">抛物流动飞线</el-menu-item>
+				</el-menu-item-group>
 			</el-sub-menu>
 			<el-menu-item index="2">
 				<i class="iconfont icon-moxingtiaodu menuItab" />
@@ -39,7 +45,7 @@
 
 <script lang="ts" setup>
 import * as Cesium from "cesium";
-import { parabolaFlowInit, roadRapidEffect, lineFlickerMaterial, startRain, startSnow, startFog } from "@/utils/shaders";
+import { parabolaFlowInit, roadRapidEffect, lineFlickerMaterial, startRain, startSnow, startFog, dynamicWall } from "@/utils/shaders";
 import { ref, getCurrentInstance } from "vue";
 const { proxy } = getCurrentInstance() as any; //获取上下文实例，ctx=vue2的this
 
@@ -124,6 +130,15 @@ const createShaderMaterial = (type: string) => {
 					duration: 3000,
 				});
 				parabolaFlowInit(window.viewer, 5, "in");
+
+				break;
+			case "1-7":
+				proxy.$message({
+					type: "success",
+					message: "动态立体墙",
+					duration: 3000,
+				});
+				dynamicWall(window.viewer, Cesium.Cartesian3.fromDegreesArray([-107.0, 43.0, -97.0, 43.0, -97.0, 40.0, -107.0, 40.0, -107.0, 43.0]));
 
 				break;
 			default:
