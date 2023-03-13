@@ -1,3 +1,11 @@
+/*
+ * @Author: hugh-skw 43328844+hugh-skw@users.noreply.github.com
+ * @Date: 2023-03-06 09:37:12
+ * @LastEditors: hugh-skw 43328844+hugh-skw@users.noreply.github.com
+ * @LastEditTime: 2023-03-06 10:10:54
+ * @FilePath: /CesiumExampleStation/src/utils/shaders/roadRapidEffect.ts
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 /**
  *  精灵穿梭路光效果，
  *  参考gitee开源

@@ -13,16 +13,16 @@
 					<i class="iconfont icon-VertexShader menuItab" />
 					<span>着色器材质</span>
 				</template>
-				<el-menu-item-group>
-					<template #title><span>Group One</span></template>
-					<el-menu-item index="1-1" @click="createShaderMaterial('1-1')">道路穿梭线</el-menu-item>
-					<el-menu-item index="1-2" @click="createShaderMaterial('1-2')">道路闪烁线</el-menu-item>
-					<el-menu-item index="1-3" @click="createShaderMaterial('1-3')">抛物流动飞线</el-menu-item>
+				<el-menu-item-group title="天气">
+					<el-menu-item index="1-1" @click="createShaderMaterial('1-1')">雨天</el-menu-item>
+					<el-menu-item index="1-2" @click="createShaderMaterial('1-2')">雪天</el-menu-item>
+					<el-menu-item index="1-3" @click="createShaderMaterial('1-3')">雾天</el-menu-item>
 				</el-menu-item-group>
-				<el-menu-item-group title="Group Two">
-					<el-menu-item index="1-4" @click="createShaderMaterial('1-4')">雨天</el-menu-item>
-					<el-menu-item index="1-5" @click="createShaderMaterial('1-5')">雪天</el-menu-item>
-					<el-menu-item index="1-6" @click="createShaderMaterial('1-6')">雾天</el-menu-item>
+				<el-menu-item-group>
+					<template #title><span>线</span></template>
+					<el-menu-item index="1-4" @click="createShaderMaterial('1-4')">道路穿梭线</el-menu-item>
+					<el-menu-item index="1-5" @click="createShaderMaterial('1-5')">道路闪烁线</el-menu-item>
+					<el-menu-item index="1-6" @click="createShaderMaterial('1-6')">抛物流动飞线</el-menu-item>
 				</el-menu-item-group>
 			</el-sub-menu>
 			<el-menu-item index="2">
@@ -39,64 +39,100 @@
 
 <script lang="ts" setup>
 import * as Cesium from "cesium";
-import { parabolaFlowInit, roadRapidEffect, lineFlickerMaterial, startRain } from "@/utils/shaders";
+import { parabolaFlowInit, roadRapidEffect, lineFlickerMaterial, startRain, startSnow, startFog } from "@/utils/shaders";
 import { ref, getCurrentInstance } from "vue";
 const { proxy } = getCurrentInstance() as any; //获取上下文实例，ctx=vue2的this
 
 let rain: any = null;
+let snow: any = null;
+let fog: any = null;
 const createShaderMaterial = (type: string) => {
-	switch (type) {
-		case "1-1":
-			proxy.$message({
-				type: "success",
-				message: "道路穿梭线",
-				duration: 3000,
-			});
-			roadRapidEffect(window.viewer, 3000, "");
-			break;
-		case "1-2":
-			proxy.$message({
-				type: "success",
-				message: "道路穿梭线",
-				duration: 3000,
-			});
-			lineFlickerMaterial(
-				window.viewer,
-				Cesium.Color.YELLOW,
-				// 设置随机变化速度
-				20 * Math.random()
-			);
-			break;
-		case "1-3":
-			if (rain) {
-				rain.destroy();
-				rain = null;
-			}
-			proxy.$message({
-				type: "success",
-				message: "抛物流动飞线",
-				duration: 3000,
-			});
-			parabolaFlowInit(window.viewer, 5, "in");
-			break;
-		case "1-4":
-			proxy.$message({
-				type: "success",
-				message: "雨天",
-				duration: 3000,
-			});
-			rain = startRain(window.viewer, {
-				tiltAngle: -0.6, //倾斜角度
-				rainSize: 0.6, // 雨大小
-				rainSpeed: 120.0, // 雨速
-			});
-			break;
-		default:
-			proxy.$message({
-				type: "warning",
-				message: "开发中~~~~~",
-				duration: 3000,
-			});
+	try {
+		if (rain) {
+			rain.destroy();
+			rain = null;
+		}
+		if (snow) {
+			snow.destroy();
+			snow = null;
+		}
+		if (fog) {
+			fog.destroy();
+			fog = null;
+		}
+	} finally {
+		switch (type) {
+			case "1-1":
+				proxy.$message({
+					type: "success",
+					message: "雨天",
+					duration: 3000,
+				});
+				rain = startRain(window.viewer, {
+					tiltAngle: -0.6, //倾斜角度
+					rainSize: 0.6, // 雨大小
+					rainSpeed: 120.0, // 雨速
+				});
+				break;
+			case "1-2":
+				proxy.$message({
+					type: "success",
+					message: "雪天",
+					duration: 3000,
+				});
+				snow = startSnow(window.viewer, {
+					snowSize: 0.02, // 雪花大小
+					snowSpeed: 60.0, // 雪速
+				});
+				break;
+			case "1-3":
+				proxy.$message({
+					type: "success",
+					message: "雾天",
+					duration: 3000,
+				});
+				snow = startFog(window.viewer, {
+					visibility: 0.2,
+					color: new Cesium.Color(0.8, 0.8, 0.8, 0.3),
+				});
+				break;
+			case "1-4":
+				proxy.$message({
+					type: "success",
+					message: "道路穿梭线",
+					duration: 3000,
+				});
+				roadRapidEffect(window.viewer, 3000, "");
+				break;
+			case "1-5":
+				proxy.$message({
+					type: "success",
+					message: "道路穿梭线",
+					duration: 3000,
+				});
+				lineFlickerMaterial(
+					window.viewer,
+					Cesium.Color.YELLOW,
+					// 设置随机变化速度
+					20 * Math.random()
+				);
+				break;
+			case "1-6":
+				proxy.$message({
+					type: "success",
+					message: "抛物流动飞线",
+					duration: 3000,
+				});
+				parabolaFlowInit(window.viewer, 5, "in");
+
+				break;
+			default:
+				proxy.$message({
+					type: "warning",
+					message: "开发中~~~~~",
+					duration: 3000,
+				});
+		}
 	}
 };
 

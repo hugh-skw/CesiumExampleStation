@@ -1,4 +1,12 @@
 /*
+ * @Author: hugh-skw 43328844+hugh-skw@users.noreply.github.com
+ * @Date: 2023-03-06 09:37:12
+ * @LastEditors: hugh-skw 43328844+hugh-skw@users.noreply.github.com
+ * @LastEditTime: 2023-03-06 09:52:10
+ * @FilePath: /CesiumExampleStation/src/utils/shaders/rainEffect.ts
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
+/*
  * @description:下雨效果，参考简书上的代码
  * @date：2022-01-20
  */
@@ -53,7 +61,8 @@ class RainEffect {
 	}
 
 	rain() {
-		return "uniform sampler2D colorTexture;\n\
+		return "precision mediump float; \n\
+				uniform sampler2D colorTexture;\n\
                 varying vec2 v_textureCoordinates;\n\
                 uniform float tiltAngle;\n\
                 uniform float rainSize;\n\

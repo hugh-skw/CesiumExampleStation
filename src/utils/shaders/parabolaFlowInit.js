@@ -10,8 +10,8 @@ import * as Cesium from "cesium";
  * @Version: 1.0
  * @Author: Julian
  * @Date: 2022-03-05 16:13:21
- * @LastEditors: Julian
- * @LastEditTime: 2022-03-05 17:39:38
+ * @LastEditors: hugh-skw 43328844+hugh-skw@users.noreply.github.com
+ * @LastEditTime: 2023-03-06 10:54:08
  */
 
 export function parabolaFlowInit(_viewer, _num, direction = "out") {
@@ -102,8 +102,14 @@ export function parabolaFlowInit(_viewer, _num, direction = "out") {
 			return true;
 		},
 	});
-
 	let _center = [113.9236839, 22.528061];
+	let parentEntity = new Cesium.Entity({
+		id: "parabolaEntity",
+		position: new Cesium.Cartesian3.fromDegrees(..._center),
+		point: {
+			color: Cesium.Color.RED,
+		},
+	});
 	let _positions = [
 		[113.8236839, 22.528061],
 		[114.0236839, 22.528061],
@@ -119,6 +125,7 @@ export function parabolaFlowInit(_viewer, _num, direction = "out") {
 		// 创建飞线
 		for (let i = 0; i < _num; i++) {
 			_viewer.entities.add({
+				parent: parentEntity,
 				polyline: {
 					positions: direction === "out" ? _siglePositions : _siglePositions.reverse(),
 					material: new LineFlowMaterialProperty({
@@ -131,16 +138,19 @@ export function parabolaFlowInit(_viewer, _num, direction = "out") {
 			});
 		}
 		// 创建轨迹线
-		let entity = _viewer.entities.add({
-			polyline: {
-				positions: _siglePositions,
-				material: new Cesium.Color(1.0, 1.0, 0.0, 0.0),
-			},
-		});
-		if (index === _positions.length - 1) {
-			_viewer.flyTo(entity);
-		}
+		// let entity = _viewer.entities.add({
+		// 	parent: parentEntity,
+		// 	polyline: {
+		// 		positions: _siglePositions,
+		// 		material: new Cesium.Color(1.0, 1.0, 0.0, 0.0),
+		// 	},
+		// });
+		// if (index === _positions.length - 1) {
+		// 	_viewer.flyTo(entity);
+		// }
 	});
+	_viewer.entities.add(parentEntity);
+	_viewer.flyTo(parentEntity);
 
 	/**
 	 * @description: 抛物线构造函数（参考开源代码）
