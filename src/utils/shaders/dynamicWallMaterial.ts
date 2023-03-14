@@ -34,7 +34,7 @@ class DynamicWallMaterialProperty {
 		if (!Cesium.defined(result)) {
 			result = {};
 		}
-		result.color = Cesium.Property.getValueOrClonedDefault(this._color, time, Cesium.Color.WHITE, result.color);
+		result.color = Cesium.Property.getValueOrClonedDefault(this._color, time, this.color, result.color);
 		if (this.trailImage) {
 			result.image = this.trailImage;
 		} else {
@@ -76,7 +76,7 @@ export function dynamicWall(viewer: Cesium.Viewer, positions: any) {
 		fabric: {
 			type: "DynamicWall",
 			uniforms: {
-				color: new Cesium.Color(1.0, 1.0, 1.0, 1),
+				color: new Cesium.Color(1.0, 0.0, 0.0, 0),
 				image: getAssetsFile("shaderImg/gradient.png"),
 				time: 0,
 			},
@@ -93,15 +93,15 @@ export function dynamicWall(viewer: Cesium.Viewer, positions: any) {
 		wall: {
 			positions: positions,
 			// 设置高度
-			maximumHeights: new Array(positions.length).fill(10000),
+			maximumHeights: new Array(positions.length).fill(50000),
 			// minimunHeights: new Array(positions.length).fill(0),
 			material: new DynamicWallMaterialProperty({
-				color: Cesium.Color.fromBytes(55, 96, 56).withAlpha(0.7),
-				duration: 3000,
-				trailImage: getAssetsFile("shaderImg/gradient.png"),
+				color: Cesium.Color.YELLOW.withAlpha(0.7),
+				duration: 1000,
+				trailImage: "static/shaderNeeds/gradient.png",
 				viewer: viewer,
 			}),
 		},
 	});
-	viewer.flyTo(entity);
+	const flyRes = viewer.flyTo(entity);
 }
