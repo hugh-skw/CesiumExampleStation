@@ -3,7 +3,7 @@
 import { Viewer } from "cesium";
 
 declare global {
-    interface Window {
-        viewer: Viewer
-    }
+	interface Window {
+		viewer: Viewer;
+	}
 }
