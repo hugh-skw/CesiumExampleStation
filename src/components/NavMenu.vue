@@ -43,6 +43,10 @@
 				<i class="iconfont icon-layer menuItab" />
 				<template #title>弹窗样式</template>
 			</el-menu-item>
+			<el-menu-item index="5" @click="createDitheringBillboard">
+				<i class="iconfont icon-layer menuItab" />
+				<template #title>鼠标悬浮billboard</template>
+			</el-menu-item>
 		</el-menu>
 	</div>
 </template>
@@ -183,18 +187,7 @@ const drawCanvas = function () {
 	ctx2.fill();
 	return canvas;
 };
-let tmpCtx: any = null;
-const testLabelCanvas = function (text: string, callback: any) {
-	// let ctx1: CanvasRenderingContext2D = canvas.getContext("2d");
-};
 
-// 循环动画
-const imgLoop = function (ctx: any, x: any, y: any, dx: any, dy: any, animations: any, index: any, setTimeoutId: any, img: any, callback: any) {
-	// console.log("ctx", ctx);
-	// imgDrow(ctx, x, y, dx, dy, animations, index, setTimeoutId, img);
-};
-
-// const imgDrow = function (ctx: any, x: any, y: any, dx: any, dy: any, animations: any, index: any, setTimeoutId: any, img: any) {};
 const createDialogCss = () => {
 	let initScale = 0.2;
 	let iconStatus = "plus";
@@ -232,10 +225,12 @@ const createDialogCss = () => {
 	let dy = 0;
 	let x = 20;
 	let y = 33;
+
+	let timex = 33;
 	window.viewer.screenSpaceEventHandler.setInputAction(async (event: Cesium.ScreenSpaceEventHandler.PositionedEvent) => {
 		const pickId = window.viewer.scene.pick(event.position).id;
 		const position = pickId.position._value;
-		const drawRoom1Res = await drawRoom1(getAssetsFile("icons/label_bg.png"));
+		// const drawRoom1Res = await drawRoom1(getAssetsFile("icons/label_bg.png"));
 		// testLabelCanvas("测试Label", (canvasRes: HTMLCanvasElement) => {
 		window.viewer.entities.add({
 			id: "test_label_canvas",
@@ -244,35 +239,114 @@ const createDialogCss = () => {
 			// 	pixelSize: 1,
 			// },
 			billboard: {
-				image: drawRoom1Res,
-				// image: getAssetsFile("icons/label_bg_content.png"),
-				// new Cesium.CallbackProperty(() => {
-				// 	let canvas: HTMLCanvasElement = document.createElement("canvas");
-				// 	canvas.width = 120;
-				// 	canvas.height = 40;
-				// 	if (canvas.getContext) {
-				// 		let ctx = canvas.getContext("2d");
-				// 		// 定义图像
-				// 		let img = new Image();
-				// 		// 设置图像的地址
-				// 		img.src = getAssetsFile("icons/label_bg_content.png");
-				// 		// img.src = "https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b9057bd739104dfe95855c7ba694a545~tplv-k3u1fbpfcp-watermark.image";
-				// 		// img.onload = function () {
-				// 		ctx.clearRect(0, 0, 120, 40);
-				// 		x = x + dx;
-				// 		y = y + dy;
-				// 		ctx.fillStyle = "#ffffff";
-				// 		ctx.fillRect(0, 0, 119, 33);
-				// 		// };
+				// material: new Cesium.ImageMaterialProperty({
+				image: new Cesium.CallbackProperty((time, res) => {
+					const canvas = document.createElement("canvas");
+					// function handleExecute() {
+					// 获取canvas元素
+					// const canvas = document.querySelector("#myCanvas");
+					canvas.width = 700;
+					canvas.height = 700;
 
-				// 		return canvas;
+					// 获取canvas渲染上下文
+					const ctx = canvas.getContext("2d");
 
-				// 		// 动画绘制
-				// 	}
-				// }, false),
-				scale: 1,
+					// 设置线条样式
+					ctx.strokeStyle = "rgba(81, 160, 255,1)";
+					ctx.lineWidth = 4;
+					ctx.lineJoin = "round";
+
+					// 定义起点和终点的坐标
+					const startX = 100;
+					const startY = 100;
+					const endX = 700;
+					const endY = 700;
+					let prevX = startX;
+					let prevY = startY;
+					let nextX;
+					let nextY;
+					// 第一帧执行的时间
+					let startTime;
+					// 期望动画持续的时间
+					const duration = 1000;
+
+					/*
+					 * 动画帧绘制方法.
+					 * currentTime是requestAnimation执行回调方法step时会传入的一个执行时的时间(由performance.now()获得).
+					 * */
+					const step = (currentTime: any) => {
+						// 第一帧绘制时记录下开始的时间
+						!startTime && (startTime = currentTime);
+						// 已经过去的时间(ms)
+						const timeElapsed = currentTime - startTime;
+						// 动画执行的进度 {0,1}
+						const progress = Math.min(timeElapsed / duration, 1);
+
+						// 绘制方法
+						const draw = () => {
+							console.log(prevX, prevY);
+							// 创建新的路径
+							ctx.beginPath();
+							// 创建子路径,并将起点移动到上一帧绘制到达的坐标点
+							ctx.moveTo(prevX, prevY);
+							// 计算这一帧中线段应该到达的坐标点,并且将prevX/Y更新为此值给下一帧使用.
+							prevX = nextX = startX + (endX - startX) * progress;
+							prevY = nextY = startY + (endY - startY) * progress;
+							// 用直线将刚刚moveTo中的点连接到(nextX,nextY)上
+							ctx.lineTo(nextX, nextY);
+							ctx.strokeStyle = `rgba(${81}, ${160}, ${255},${0.25})`;
+							// 把这一帧的路径绘制出来
+							ctx.stroke();
+						};
+						draw();
+
+						// if (progress < 1) {
+						// 	requestAnimationFrame(step);
+						// } else {
+						// 	console.log("动画执行完毕");
+						// }
+					};
+					step(time);
+					// requestAnimationFrame(step);
+					// }
+					return canvas.toDataURL("image/png");
+				}, false),
 				pixelOffset: new Cesium.Cartesian2(150, -60),
+				// transparent: true,
+				// }),
+				// height: 0.0,
+				// semiMajorAxis: 1000.0,
 			},
+			// billboard: {
+			// 	image: new Cesium.CallbackProperty(() => drawRoom1(getAssetsFile("icons/label_bg.png")), false),
+			// 	// image: getAssetsFile("icons/label_bg_content.png"),
+			// 	// new Cesium.CallbackProperty(() => {
+			// 	// 	let canvas: HTMLCanvasElement = document.createElement("canvas");
+			// 	// 	canvas.width = 120;
+			// 	// 	canvas.height = 40;
+			// 	// 	if (canvas.getContext) {
+			// 	// 		let ctx = canvas.getContext("2d");
+			// 	// 		// 定义图像
+			// 	// 		let img = new Image();
+			// 	// 		// 设置图像的地址
+			// 	// 		img.src = getAssetsFile("icons/label_bg_content.png");
+			// 	// 		// img.src = "https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b9057bd739104dfe95855c7ba694a545~tplv-k3u1fbpfcp-watermark.image";
+			// 	// 		// img.onload = function () {
+			// 	// 		ctx.clearRect(0, 0, 120, 40);
+			// 	// 		x = x + dx;
+			// 	// 		y = y + dy;
+			// 	// 		ctx.fillStyle = "#ffffff";
+			// 	// 		ctx.fillRect(0, 0, 119, 33);
+			// 	// 		// };
+
+			// 	// 		return canvas;
+
+			// 	// 		// 动画绘制
+			// 	// 	}
+			// 	// }, false),
+			// 	scale: 1,
+			// 	pixelOffset: new Cesium.Cartesian2(150, -60),
+			// },
 		});
 		// });
 		// console.log(labelCanvas);
@@ -307,43 +381,75 @@ const createDialogCss = () => {
 		// trackPop = pickId.position._value;
 	}, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 };
+
 const drawRoom1 = async function (imageSrc: string) {
 	const canvas = document.createElement("canvas");
-	const dpr = window.devicePixelRatio;
 	const ctx = canvas.getContext("2d");
-	const devicePixelRatio = window.devicePixelRatio || 1;
-	const backingStoreRatio = ctx?.webkitBackingStorePixelRatio || 1;
 	const ratio = 1;
 	const w = 318;
 	const h = 133;
-	console.log("ratio:", ratio);
 	canvas.width = w * ratio;
 	canvas.height = h * ratio;
 	canvas.style.width = w / 2 + "px";
 	canvas.style.height = h / 2 + "px";
 	ctx?.scale(ratio, ratio);
 	const image = await loadImage(imageSrc);
+	let timex = 100;
+	const setIntervalId = setInterval(() => {
+		console.log("timex", timex);
+		if (timex >= w + 2) {
+			clearInterval(setIntervalId);
+			return;
+		}
+		ctx?.drawImage(image, 0, 0, timex++, h, 10, 0, timex++, h);
+		let ctx1 = canvas.getContext("2d");
+		let x = w / 2;
+		let y = h / 2;
+		let radius = 8;
 
-	ctx?.drawImage(image, 10, 0);
+		ctx1?.beginPath();
+		ctx1?.arc(10, 124, radius, 0, Math.PI * 2);
+		ctx1.strokeStyle = "#41ffd4";
+		ctx1.lineWidth = 2;
+		ctx1?.stroke();
+
+		// let ctx2 = canvas.getContext("2d");
+		let radius2 = 4;
+		ctx1?.beginPath();
+		ctx1?.arc(10, 124, radius2, 0, Math.PI * 2);
+		ctx1?.closePath();
+		ctx1.fillStyle = "#41ffd4";
+		// ctx2.lineWidth = 10;
+		ctx1?.fill();
+
+		// 绘制文字
+		const ctx2 = canvas.getContext("2d");
+		// ctx2.scale(ratio, ratio);
+		const text = ["房主姓名：杨学东", "租客姓名：梁启明", "联系方式：18755738299"];
+		ctx2.font = "15px Arial";
+		drawtext(ctx2, text, x - 20, 14);
+		return canvas;
+	}, 100);
+	ctx?.drawImage(image, 0, 0, timex++, h, 10, 0, timex++, h);
 	let ctx1 = canvas.getContext("2d");
 	let x = w / 2;
 	let y = h / 2;
 	let radius = 8;
 
-	ctx1.beginPath();
-	ctx1.arc(10, 124, radius, 0, Math.PI * 2);
+	ctx1?.beginPath();
+	ctx1?.arc(10, 124, radius, 0, Math.PI * 2);
 	ctx1.strokeStyle = "#41ffd4";
 	ctx1.lineWidth = 2;
-	ctx1.stroke();
+	ctx1?.stroke();
 
 	// let ctx2 = canvas.getContext("2d");
 	let radius2 = 4;
-	ctx1.beginPath();
-	ctx1.arc(10, 124, radius2, 0, Math.PI * 2);
-	ctx1.closePath();
+	ctx1?.beginPath();
+	ctx1?.arc(10, 124, radius2, 0, Math.PI * 2);
+	ctx1?.closePath();
 	ctx1.fillStyle = "#41ffd4";
 	// ctx2.lineWidth = 10;
-	ctx1.fill();
+	ctx1?.fill();
 
 	// 绘制文字
 	const ctx2 = canvas.getContext("2d");
@@ -351,7 +457,6 @@ const drawRoom1 = async function (imageSrc: string) {
 	const text = ["房主姓名：杨学东", "租客姓名：梁启明", "联系方式：18755738299"];
 	ctx2.font = "15px Arial";
 	drawtext(ctx2, text, x - 20, 14);
-
 	return canvas;
 
 	// var img = new Image();
@@ -402,12 +507,99 @@ function drawtext(ctx: any, t: any, x: any, y: any) {
 	}
 }
 
-// const handleOpen = (key: string, keyPath: string[]) => {
-//     console.log('handleOpen', key, keyPath)
-// }
-// const handleClose = (key: string, keyPath: string[]) => {
-//     console.log('handleClose', key, keyPath)
-// }
+const createDitheringBillboard = () => {
+	const positions = [
+		[119.770959, 31.988475],
+		[118.771959, 32.987475],
+		[117.772959, 32.088175],
+		[118.770359, 30.988375],
+		[117.370859, 32.581475],
+	];
+	for (let i = 0; i < positions.length; i++) {
+		const position = positions[i];
+		window.viewer.entities.add({
+			id: "dithering_point" + i,
+			position: Cesium.Cartesian3.fromDegrees(position[0], position[1]),
+			billboard: {
+				image: getAssetsFile("icons/locate.png"),
+				scale: 0.24,
+				pixelOffset: new Cesium.Cartesian2(0, 0),
+			},
+		});
+	}
+
+	var rotation = -0.31;
+	var rotationStatus = "right";
+	let fudu = 0.3;
+	let scale = 0.24;
+	let count = 1;
+	let count2 = 50;
+	let y = 0;
+	var handler = new Cesium.ScreenSpaceEventHandler(window.viewer.scene.canvas);
+	let tmpEntity: any = null;
+	handler.setInputAction(function (event: Cesium.ScreenSpaceEventHandler.MotionEvent) {
+		if (!window.viewer.scene.pick(event.endPosition)) {
+			console.log("空白处");
+			if (tmpEntity) {
+				console.log("清除晃动");
+				// tmpEntity.billboard!.rotation = 0;
+				tmpEntity.billboard!.scale = 0.24;
+				tmpEntity.billboard!.pixelOffset = new Cesium.Cartesian2(0, 0);
+				tmpEntity = null;
+			}
+			return;
+		}
+		let entity: Cesium.Entity = window.viewer.scene.pick(event.endPosition).id;
+		tmpEntity = entity;
+		entity.billboard!.scale = new Cesium.CallbackProperty(function (time, result) {
+			if (rotationStatus === "right") {
+				scale += 0.002;
+			}
+			if (rotationStatus === "left") {
+				scale -= 0.002;
+			}
+			if (scale >= 0.3) {
+				rotationStatus = "left";
+			}
+			if (scale <= 0.24) {
+				rotationStatus = "right";
+			}
+			return scale;
+		}, false);
+		entity.billboard!.pixelOffset = new Cesium.CallbackProperty(function (time, result) {
+			if (rotationStatus === "right") {
+				y -= 0.16;
+			}
+			if (rotationStatus === "left") {
+				y += 0.16;
+			}
+			return new Cesium.Cartesian2(0, y);
+		}, false);
+		// entity.billboard!.rotation = new Cesium.CallbackProperty(function (time, result) {
+		// 	if (count === 50) {
+		// 		count2--;
+		// 		if (count2 !== 0) {
+		// 			return 0;
+		// 		}
+		// 		count = 0;
+		// 		count2 = 50;
+		// 	}
+		// 	if (rotationStatus === "right") {
+		// 		rotation += 0.08;
+		// 	} else {
+		// 		rotation -= 0.08;
+		// 	}
+		// 	if (rotation > 0.3) {
+		// 		rotationStatus = "left";
+		// 	}
+		// 	if (rotation < -0.3) {
+		// 		rotationStatus = "right";
+		// 	}
+		// 	count++;
+		// 	return rotation;
+		// }, false);
+	}, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+};
 </script>
 
 <style scoped lang="scss">
