@@ -162,6 +162,7 @@ const createShaderMaterial = (type: string) => {
 		}
 	}
 };
+
 const drawCanvas = function () {
 	let canvas: HTMLCanvasElement = document.createElement("canvas");
 	canvas.width = 100;
