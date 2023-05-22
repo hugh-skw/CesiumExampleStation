@@ -57,6 +57,8 @@ import { parabolaFlowInit, roadRapidEffect, lineFlickerMaterial, startRain, star
 import { ref, getCurrentInstance } from "vue";
 import { getAssetsFile } from "@/utils/tools/unit";
 import type { Cartesian3 } from "cesium";
+import Bubble from "@/components/bubble/Bubble";
+
 const { proxy } = getCurrentInstance() as any; //获取上下文实例，ctx=vue2的this
 
 let rain: any = null;
@@ -486,6 +488,9 @@ const createDitheringBillboard = () => {
 				scale: 0.24,
 				pixelOffset: new Cesium.Cartesian2(0, 0),
 			},
+			properties: {
+				data: { name: "北京西路测试点", type: "固定枪机", state: "在线" },
+			},
 		});
 	}
 	var rotationStatus = "right";
@@ -556,21 +561,37 @@ const createDitheringBillboard = () => {
 		if (pick.id) {
 			let entity: Cesium.Entity = pick.id;
 			const position = <Cartesian3 | undefined>entity.position;
-			window.viewer.entities.add({
-				id: entity.id + "-" + "popWindow",
-				position: position,
-				billboard: {
-					show: true,
-					image: new Cesium.CallbackProperty(() => {
-						window.viewer.scene.requestRender();
-						return drawPopWindow();
-					}, true),
-					pixelOffset: new Cesium.Cartesian2(0, -50),
-					scale: 1,
-				},
-			});
+			bubble(entity.id + "-" + "popWindow", entity);
+			// window.viewer.entities.add({
+			// 	id: entity.id + "-" + "popWindow",
+			// 	position: position,
+			// 	billboard: {
+			// 		show: true,
+			// 		image: new Cesium.CallbackProperty(() => {
+			// 			window.viewer.scene.requestRender();
+			// 			return drawPopWindow();
+			// 		}, true),
+			// 		pixelOffset: new Cesium.Cartesian2(0, -50),
+			// 		scale: 1,
+			// 	},
+			// });
 		}
 	}, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+};
+let bubbles: any = null;
+
+const bubble = (id: any, entity: Cesium.Entity) => {
+	debugger;
+
+	if (bubbles) {
+		bubbles.windowClose();
+		bubbles = null;
+	}
+	bubbles = new Bubble(
+		Object.assign(entity, {
+			viewer: window.viewer,
+		})
+	);
 };
 let x = 0;
 let y = 100;
