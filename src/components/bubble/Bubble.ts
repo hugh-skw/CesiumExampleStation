@@ -23,20 +23,19 @@ export default class Bubble {
 		const title = "固定枪机";
 		const state = "在线";
 		const id = val.id;
+		console.log(id);
 		this.vmInstance = createVNode(Label, {
-			props: {
-				title,
-				state,
-				id,
-			},
+			title,
+			state,
+			id,
 		}); //根据模板创建一个面板
 
-		this.vmInstance.closeEvent = (e: any) => {
+		console.log(this.vmInstance);
+		render(this.vmInstance, val.viewer.cesiumWidget.container);
+		this.vmInstance.el.closeEvent = (e: any) => {
 			this.windowClose();
 		};
-		render(this.vmInstance, val.viewer.cesiumWidget.container);
-		console.log(this.vmInstance);
-		// val.viewer.cesiumWidget.container.appendChild(this.vmInstance); //将字符串模板生成的内容添加到DOM上
+		val.viewer.cesiumWidget.container.appendChild(this.vmInstance.el); //将字符串模板生成的内容添加到DOM上
 		//
 		this.addPostRender();
 	}
@@ -68,12 +67,13 @@ export default class Bubble {
 
 	//关闭
 	windowClose() {
-		debugger;
+		// debugger;
 		if (this.vmInstance) {
+			this.vmInstance.el.style.display = "none"; //删除dom
 			this.vmInstance.el.remove();
 			// this.vmInstance.$destroy();
 		}
-		this.vmInstance.el.style.display = "none"; //删除dom
+		this.vmInstance = null;
 		this.viewer.scene.postRender.removeEventListener(this.postRender, this); //移除事件监听
 	}
 }

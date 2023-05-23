@@ -582,12 +582,13 @@ const createDitheringBillboard = () => {
 let bubbles: any = null;
 
 const bubble = (id: any, entity: Cesium.Entity) => {
-	debugger;
-
+	// debugger;
+	//
 	if (bubbles) {
 		bubbles.windowClose();
-		bubbles = null;
+		// bubbles = null;
 	}
+
 	bubbles = new Bubble(
 		Object.assign(entity, {
 			viewer: window.viewer,

@@ -28,6 +28,8 @@
 </template>
 
 <script setup lang="ts">
+import { getCurrentInstance } from "vue";
+
 let show = true;
 let props = defineProps({
 	title: {
@@ -43,12 +45,13 @@ let props = defineProps({
 		default: "001",
 	},
 });
+const { proxy, ctx } = getCurrentInstance();
 const closeClick = () => {
-	console.log("关闭弹窗");
+	proxy.$el.closeEvent();
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .box {
 	width: 200px;
 	height: 200px;
@@ -64,7 +67,7 @@ const closeClick = () => {
 	right: 10px;
 	text-shadow: 2px 2px 2px #022122;
 	cursor: pointer;
-	animation: fontColor 1.5s;
+	animation: fontColor 1s;
 }
 
 .box-wrap {
@@ -77,7 +80,7 @@ const closeClick = () => {
 	border: 1px solid #38e1ff;
 	background-color: #38e1ff4a;
 	box-shadow: 0 0 10px 2px #29baf1;
-	animation: slide 2s;
+	animation: slide 1s;
 }
 
 .box-wrap .area {
@@ -88,7 +91,7 @@ const closeClick = () => {
 	height: 30px;
 	background-image: linear-gradient(to left, #4cdef9, #4cdef96b);
 	border-radius: 30px 0px 0px 0px;
-	animation: area 1.5s;
+	animation: area 1s;
 }
 
 .pine {
@@ -113,7 +116,7 @@ const closeClick = () => {
 	border-bottom: 1px solid #38e1ff;
 	transform-origin: bottom center;
 	transform: rotateZ(135deg) scale(1.5);
-	animation: slash 1s;
+	animation: slash 0.5s;
 	filter: drop-shadow(1px 0px 2px #03abb4);
 	/* transition: slash 2s; */
 }
