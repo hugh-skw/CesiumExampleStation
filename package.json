@@ -12,6 +12,7 @@
     "@element-plus/icons-vue": "^2.0.10",
     "element-plus": "^2.2.33",
     "pinia": "^2.0.32",
+    "three": "^0.152.2",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6"
   },
@@ -19,6 +20,7 @@
     "@babel/core": "^7.21.0",
     "@babel/eslint-parser": "^7.19.1",
     "@types/node": "^18.14.5",
+    "@types/three": "^0.152.0",
     "@typescript-eslint/eslint-plugin": "^5.54.0",
     "@typescript-eslint/parser": "^5.54.0",
     "@vitejs/plugin-vue": "^4.0.0",
