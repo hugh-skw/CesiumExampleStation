@@ -47,6 +47,20 @@
 				<i class="iconfont icon-layer menuItab" />
 				<template #title>鼠标悬浮billboard</template>
 			</el-menu-item>
+			<el-sub-menu index="6">
+				<template #title>
+					<i class="iconfont icon-VertexShader menuItab" />
+					<span>threejs</span>
+				</template>
+			</el-sub-menu>
+			<el-menu-item index="7" @click="threeInit">
+				<i class="iconfont icon-layer menuItab" />
+				<template #title>初始化Threejs场景</template>
+			</el-menu-item>
+			<el-menu-item index="8" @click="threeLoadFbx">
+				<i class="iconfont icon-layer menuItab" />
+				<template #title>加载FBX模型</template>
+			</el-menu-item>
 		</el-menu>
 	</div>
 </template>
@@ -58,6 +72,7 @@ import { ref, getCurrentInstance } from "vue";
 import { getAssetsFile } from "@/utils/tools/unit";
 import type { Cartesian3 } from "cesium";
 import Bubble from "@/components/bubble/Bubble";
+import ZThree from "@/utils/threejs/publicFunctions";
 
 const { proxy } = getCurrentInstance() as any; //获取上下文实例，ctx=vue2的this
 
@@ -167,7 +182,7 @@ const drawCanvas = function () {
 	let canvas: HTMLCanvasElement = document.createElement("canvas");
 	canvas.width = 100;
 	canvas.height = 100;
-	let ctx1: CanvasRenderingContext2D = canvas.getContext("2d");
+	let ctx1: any = canvas.getContext("2d");
 	let x = canvas.width / 2;
 	let y = canvas.height / 2;
 	let radius = 30;
@@ -178,7 +193,7 @@ const drawCanvas = function () {
 	ctx1.lineWidth = 10;
 	ctx1.stroke();
 
-	let ctx2: CanvasRenderingContext2D = canvas.getContext("2d");
+	let ctx2: any = canvas.getContext("2d");
 	let x2 = canvas.width / 2;
 	let y2 = canvas.height / 2;
 	let radius2 = 15;
@@ -241,7 +256,7 @@ const createDialogCss = () => {
 					canvas.height = 700;
 
 					// 获取canvas渲染上下文
-					const ctx = canvas.getContext("2d");
+					let ctx: any = canvas.getContext("2d");
 
 					// 设置线条样式
 					ctx.strokeStyle = "rgba(81, 160, 255,1)";
@@ -258,7 +273,7 @@ const createDialogCss = () => {
 					let nextX;
 					let nextY;
 					// 第一帧执行的时间
-					let startTime;
+					let startTime: any;
 					// 期望动画持续的时间
 					const duration = 1000;
 
@@ -332,7 +347,7 @@ const createDialogCss = () => {
 									<p><a>All our modules are designed to play nicely with responsive of course. At the end of the day it comes down to the theme you use - our code doesn't get in your way.</a></p>
 									</div>
 								</div>`;
-		document.getElementById("app").appendChild(bubble);
+		document.getElementById("app")!.appendChild(bubble);
 
 		/**
      *
@@ -353,7 +368,7 @@ const drawRoom1 = async function (imageSrc: string) {
 	canvas.style.width = w / 2 + "px";
 	canvas.style.height = h / 2 + "px";
 	ctx?.scale(ratio, ratio);
-	const image = await loadImage(imageSrc);
+	const image: any = await loadImage(imageSrc);
 	let timex = 100;
 	const setIntervalId = setInterval(() => {
 		console.log("timex", timex);
@@ -362,7 +377,7 @@ const drawRoom1 = async function (imageSrc: string) {
 			return;
 		}
 		ctx?.drawImage(image, 0, 0, timex++, h, 10, 0, timex++, h);
-		let ctx1 = canvas.getContext("2d");
+		let ctx1: any = canvas.getContext("2d");
 		let x = w / 2;
 		let y = h / 2;
 		let radius = 8;
@@ -383,7 +398,7 @@ const drawRoom1 = async function (imageSrc: string) {
 		ctx1?.fill();
 
 		// 绘制文字
-		const ctx2 = canvas.getContext("2d");
+		let ctx2: any = canvas.getContext("2d");
 		// ctx2.scale(ratio, ratio);
 		const text = ["房主姓名：杨学东", "租客姓名：梁启明", "联系方式：18755738299"];
 		ctx2.font = "15px Arial";
@@ -391,7 +406,7 @@ const drawRoom1 = async function (imageSrc: string) {
 		return canvas;
 	}, 100);
 	ctx?.drawImage(image, 0, 0, timex++, h, 10, 0, timex++, h);
-	let ctx1 = canvas.getContext("2d");
+	let ctx1: any = canvas.getContext("2d");
 	let x = w / 2;
 	let y = h / 2;
 	let radius = 8;
@@ -412,7 +427,7 @@ const drawRoom1 = async function (imageSrc: string) {
 	ctx1?.fill();
 
 	// 绘制文字
-	const ctx2 = canvas.getContext("2d");
+	let ctx2: any = canvas.getContext("2d");
 	// ctx2.scale(ratio, ratio);
 	const text = ["房主姓名：杨学东", "租客姓名：梁启明", "联系方式：18755738299"];
 	ctx2.font = "15px Arial";
@@ -597,7 +612,7 @@ const bubble = (id: any, entity: Cesium.Entity) => {
 };
 let x = 0;
 let y = 100;
-
+let Three: any = null;
 const drawPopWindow = function () {
 	let canvas: HTMLCanvasElement = document.createElement("canvas");
 	canvas.id = "canvas" + "_" + x;
@@ -617,6 +632,18 @@ const drawPopWindow = function () {
 	ctx?.stroke();
 	console.log("canvas:", canvas.id, canvas);
 	return canvas.toDataURL();
+};
+const threeInit = function () {
+	Three = new ZThree("threeEle", document.getElementById("mapContainer"));
+	Three.init();
+	// Three.initHelper();
+	// Three.initLight();
+	// Three.initOrbitControls();
+	// const clock = new THREE.Clock();
+	// Three.camera.position.set(30, 30, 30);
+};
+const threeLoadFbx = function () {
+	Three.loadFbx(getAssetsFile("models/Mafer_City-out.glb"));
 };
 </script>
 
