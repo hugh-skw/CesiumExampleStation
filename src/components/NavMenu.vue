@@ -31,10 +31,16 @@
 					<el-menu-item index="1-9" @click="createShaderMaterial('1-9')">抛物流动飞线</el-menu-item>
 				</el-menu-item-group>
 			</el-sub-menu>
-			<el-menu-item index="2">
-				<i class="iconfont icon-moxingtiaodu menuItab" />
-				<template #title>模型调度</template>
-			</el-menu-item>
+			<el-sub-menu index="2">
+				<template #title>
+					<i class="iconfont icon-moxingtiaodu menuItab" />
+					<span>模型调度</span></template
+				>
+				<el-menu-item-group>
+					<el-menu-item index="2-1" @click="load3DTileset('2-1')">3dtiles模型</el-menu-item>
+				</el-menu-item-group>
+			</el-sub-menu>
+
 			<el-menu-item index="3">
 				<i class="iconfont icon-layer menuItab" />
 				<template #title>图层加载</template>
@@ -450,6 +456,28 @@ const drawRoom1 = async function (imageSrc: string) {
 	// }
 };
 
+const load3DTileset = (type: string) => {
+	switch (type) {
+		case "2-1":
+			add3dTiles();
+			break;
+	}
+	let handler = new Cesium.ScreenSpaceEventHandler(window.viewer.scene.canvas);
+	handler.setInputAction(function (event: Cesium.ScreenSpaceEventHandler.PositionedEvent) {
+		let pick = window.viewer.scene.pick(event.position);
+		console.log("当前拾取的坐标：", pick);
+	}, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+};
+const add3dTiles = () => {
+	var tileset: Cesium.Cesium3DTileset = window.viewer.scene.primitives.add(
+		new Cesium.Cesium3DTileset({
+			url: "http://124.70.11.35//model-zhouqu1/other3DTiles/tiles/clzj_gbz/tileset.json",
+		})
+	);
+	tileset.readyPromise.then((t) => {
+		window.viewer.flyTo(t);
+	});
+};
 // 加载图片,异步方法
 function loadImage(url: string) {
 	return new Promise((resolve) => {
@@ -571,6 +599,8 @@ const createDitheringBillboard = () => {
 	var handler2 = new Cesium.ScreenSpaceEventHandler(window.viewer.scene.canvas);
 	handler2.setInputAction(function (event: Cesium.ScreenSpaceEventHandler.PositionedEvent) {
 		const pick = window.viewer.scene.pick(event.position);
+		let position = window.viewer.scene.camera.pickEllipsoid(event.position, window.viewer.scene.globe.ellipsoid);
+		console.log(position);
 		if (!pick) {
 			return;
 		}

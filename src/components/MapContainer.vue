@@ -17,8 +17,8 @@ onMounted(() => {
 			requestWebgl1: true,
 		},
 		imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
-			url: "http://cache1.arcgisonline.cn/arcgis/rest/services/ChinaOnlineStreetPurplishBlue/MapServer",
-			// url: "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
+			// url: "http://cache1.arcgisonline.cn/arcgis/rest/services/ChinaOnlineStreetPurplishBlue/MapServer",
+			url: "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
 		}),
 	});
 	viewer.scene.debugShowFramesPerSecond = true;
@@ -32,7 +32,42 @@ onMounted(() => {
 
 	// svg.getElementsByTagName("path")[0].setAttribute("tra", "20");
 	// svg.getElementsByTagName("path")[0].setAttribute("height", "20");
-
+	viewer.entities.add({
+		polyline: {
+			show: true, //是否显示，默认显示
+			positions: Cesium.Cartesian3.fromDegreesArrayHeights([70, 40, 600000, 75, 30, 400000, 120, 25, 200000]),
+			width: 2, //线的宽度（像素），默认为1
+			granularity: Cesium.Math.RADIANS_PER_DEGREE,
+			material: Cesium.Color.BLUE, //线的颜色，默认为白色
+			// depthFailMaterial: Cesium.Color.RED, //线被遮挡部分的颜色，默认为空（不显示被遮挡的部分），设置后可显示被遮挡的部分
+			arcType: Cesium.ArcType.NONE, //线的地理类型，NONE表示纯直线，GEODESIC表示为测地线，RHUMB表示等角航线，默认为测地线
+			// arcType: Cesium.ArcType.GEODESIC,
+			// arcType: Cesium.ArcType.RHUMB,
+			clampToGround: false, //是否贴地，默认为否
+			shadows: Cesium.ShadowMode.DISABLED, //是否显示光照阴影，默认为否
+			// distanceDisplayCondition: new Cesium.DistanceDisplayCondition(100.0, 2000000.0), //显示的视角距离条件，在该范围内显示，范围不显示，默认为空
+			classificationType: Cesium.ClassificationType.BOTH,
+			zIndex: 0, //显示深度，越大表示图层在上
+		},
+	});
+	viewer.entities.add({
+		polyline: {
+			show: true, //是否显示，默认显示
+			positions: Cesium.Cartesian3.fromDegreesArray([70, 40, 75, 30, 120, 25]),
+			width: 2, //线的宽度（像素），默认为1
+			granularity: Cesium.Math.RADIANS_PER_DEGREE,
+			material: Cesium.Color.RED, //线的颜色，默认为白色
+			// depthFailMaterial: Cesium.Color.RED, //线被遮挡部分的颜色，默认为空（不显示被遮挡的部分），设置后可显示被遮挡的部分
+			arcType: Cesium.ArcType.NONE, //线的地理类型，NONE表示纯直线，GEODESIC表示为测地线，RHUMB表示等角航线，默认为测地线
+			// arcType: Cesium.ArcType.GEODESIC,
+			// arcType: Cesium.ArcType.RHUMB,
+			clampToGround: false, //是否贴地，默认为否
+			shadows: Cesium.ShadowMode.DISABLED, //是否显示光照阴影，默认为否
+			// distanceDisplayCondition: new Cesium.DistanceDisplayCondition(100.0, 2000000.0), //显示的视角距离条件，在该范围内显示，范围不显示，默认为空
+			classificationType: Cesium.ClassificationType.BOTH,
+			zIndex: 0, //显示深度，越大表示图层在上
+		},
+	});
 	window.viewer = viewer;
 });
 </script>
