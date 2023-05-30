@@ -16,11 +16,24 @@ onMounted(() => {
 		contextOptions: {
 			requestWebgl1: true,
 		},
-		imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
-			// url: "http://cache1.arcgisonline.cn/arcgis/rest/services/ChinaOnlineStreetPurplishBlue/MapServer",
-			url: "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
+		// imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
+		// 	url: "http://cache1.arcgisonline.cn/arcgis/rest/services/ChinaOnlineStreetPurplishBlue/MapServer",
+		// 	// url: "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
+		// }),
+		imageryProvider: new Cesium.UrlTemplateImageryProvider({
+			url: "https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
+			// layer: "tdtVecBasicLayer",
+			// style: "default",
+			// format: "image/png",
+			// tileMatrixSetID: "GoogleMapsCompatible",
+			// show: false,
 		}),
 	});
+	viewer.imageryLayers.addImageryProvider(
+		new Cesium.UrlTemplateImageryProvider({
+			url: "http://webst02.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1&style=8",
+		})
+	);
 	viewer.scene.debugShowFramesPerSecond = true;
 	// var path = "M0,3,160,3,160,136,3,136,3,0";
 	let svg: Element = viewer.selectionIndicator.viewModel.selectionIndicatorElement.getElementsByTagName("svg:svg")[0];

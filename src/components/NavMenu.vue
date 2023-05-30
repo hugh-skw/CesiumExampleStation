@@ -60,6 +60,17 @@
 					<el-menu-item index="6-2" @click="threeFunctions('6-2')">加载FBX模型</el-menu-item>
 				</el-menu-item-group>
 			</el-sub-menu>
+			<el-sub-menu index="7">
+				<template #title> <i class="iconfont icon-layer menuItab" /><span>threejs学习模块</span></template>
+				<el-menu-item-group>
+					<el-menu-item index="7-1" @click="threeLearning('7-1')">1--初始化场景</el-menu-item>
+					<el-menu-item index="7-2" @click="threeLearning('7-2')">2--轨道控制器</el-menu-item>
+					<el-menu-item index="7-3" @click="threeLearning('7-3')">3--坐标轴辅助器</el-menu-item>
+					<el-menu-item index="7-4" @click="threeLearning('7-4')">4--基础动画</el-menu-item>
+					<el-menu-item index="7-5" @click="threeLearning('7-5')">5--gsap动画插件</el-menu-item>
+					<el-menu-item index="7-6" @click="threeLearning('7-6')">6--双击控制全屏</el-menu-item>
+				</el-menu-item-group>
+			</el-sub-menu>
 		</el-menu>
 	</div>
 </template>
@@ -67,6 +78,7 @@
 <script lang="ts" setup>
 import * as Cesium from "cesium";
 import { parabolaFlowInit, roadRapidEffect, lineFlickerMaterial, startRain, startSnow, startFog, dynamicWall } from "@/utils/shaders";
+import { initHelper, init as learnInit, orbitControl, animateCube, gsapAnimation, douclickFullscreen } from "../utils/threejs/learningc1";
 import { ref, getCurrentInstance } from "vue";
 import { getAssetsFile } from "@/utils/tools/unit";
 import type { Cartesian3 } from "cesium";
@@ -665,7 +677,6 @@ const threeFunctions = function (type: string) {
 		case "6-2":
 			threeLoadFbx();
 			break;
-
 		default:
 			break;
 	}
@@ -673,14 +684,34 @@ const threeFunctions = function (type: string) {
 const threeInit = function () {
 	Three = new ZThree("threeEle", document.getElementById("mapContainer"));
 	Three.init();
-	// Three.initHelper();
-	// Three.initLight();
-	// Three.initOrbitControls();
-	// const clock = new THREE.Clock();
-	// Three.camera.position.set(30, 30, 30);
 };
 const threeLoadFbx = function () {
 	Three.loadFbx(getAssetsFile("models/Mafer_City-out.glb"));
+};
+
+const threeLearning = function (type: string) {
+	switch (type) {
+		case "7-1":
+			learnInit();
+			break;
+		case "7-2":
+			orbitControl();
+			break;
+		case "7-3":
+			initHelper();
+			break;
+		case "7-4":
+			animateCube();
+			break;
+		case "7-5":
+			gsapAnimation();
+			break;
+		case "7-6":
+			douclickFullscreen();
+			break;
+		default:
+			break;
+	}
 };
 </script>
 

@@ -7,6 +7,9 @@ dependencies:
   element-plus:
     specifier: ^2.2.33
     version: 2.2.33(vue@3.2.47)
+  gsap:
+    specifier: ^3.11.5
+    version: 3.11.5
   pinia:
     specifier: ^2.0.32
     version: 2.0.32(typescript@4.9.5)(vue@3.2.47)
@@ -1933,6 +1936,10 @@ packages:
   /grapheme-splitter@1.0.4:
     resolution: {integrity: sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==}
     dev: true
+
+  /gsap@3.11.5:
+    resolution: {integrity: sha512-Q89nKCLgoX5xUjznh9LcaIUkz54k1voNucT1Rpf9SJNFIQznBwFqt5qUUQbeVInFyN/n18OUJkpeI6CNEDt74w==}
+    dev: false
 
   /has-flag@3.0.0:
     resolution: {integrity: sha512-sKJf1+ceQBr4SMkvQnBDNDtf4TXpVhVGateu0t918bl30FnbE2m4vNLX+VWe/dpjlb+HugGYzW7uQXH98HPEYw==}
