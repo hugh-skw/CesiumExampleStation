@@ -42,20 +42,20 @@ export default class ZThree {
 		this.element!.appendChild(renderer.domElement);
 
 		this.stats = new Stats();
-		this.element!.appendChild(this.stats.dom);
+		// this.element!.appendChild(this.stats.dom);
 		const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
 		this.camera = camera;
-		camera.position.set(0, 0, 400); //设置相机位置
+		camera.position.set(0, 200, 400); //设置相机位置
 		this.controls = new OrbitControls(camera, renderer.domElement);
 		this.controls.target.set(0, 0.5, 0);
 		this.controls.update();
 		this.controls.enablePan = false;
 		this.controls.enableDamping = true;
-		this.controls.mouseButtons = {
-			LEFT: THREE.MOUSE.PAN,
-			MIDDLE: THREE.MOUSE.DOLLY,
-			RIGHT: THREE.MOUSE.ROTATE,
-		};
+		// this.controls.mouseButtons = {
+		// 	LEFT: THREE.MOUSE.PAN,
+		// 	MIDDLE: THREE.MOUSE.DOLLY,
+		// 	RIGHT: THREE.MOUSE.ROTATE,
+		// };
 		// const geometry = new THREE.BoxGeometry(100, 100, 100);
 		// //创建一个材质对象Material
 		// const material = new THREE.MeshBasicMaterial({
@@ -150,12 +150,6 @@ export default class ZThree {
 	}
 
 	loadFbx(url: string) {
-		// const geometry = new THREE.BoxGeometry(1, 1, 1);
-		// const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-		// const cube = new THREE.Mesh(geometry, material);
-		// this.scene.add(cube);
-		// this.renderer.render(this.scene, this.camera);
-		// const loader = new FBXLoader();
 		const loader = new GLTFLoader();
 		loader.load(url, (gltf: any) => {
 			const model = gltf.scene;
@@ -180,7 +174,7 @@ export default class ZThree {
 
 			this.controls.update();
 
-			this.stats.update();
+			// this.stats.update();
 
 			this.renderer.render(this.scene, this.camera);
 		};

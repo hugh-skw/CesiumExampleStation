@@ -54,19 +54,12 @@
 				<template #title>鼠标悬浮billboard</template>
 			</el-menu-item>
 			<el-sub-menu index="6">
-				<template #title>
-					<i class="iconfont icon-VertexShader menuItab" />
-					<span>threejs</span>
-				</template>
+				<template #title> <i class="iconfont icon-layer menuItab" /><span>threejs</span></template>
+				<el-menu-item-group>
+					<el-menu-item index="6-1" @click="threeFunctions('6-1')">初始化场景</el-menu-item>
+					<el-menu-item index="6-2" @click="threeFunctions('6-2')">加载FBX模型</el-menu-item>
+				</el-menu-item-group>
 			</el-sub-menu>
-			<el-menu-item index="7" @click="threeInit">
-				<i class="iconfont icon-layer menuItab" />
-				<template #title>初始化Threejs场景</template>
-			</el-menu-item>
-			<el-menu-item index="8" @click="threeLoadFbx">
-				<i class="iconfont icon-layer menuItab" />
-				<template #title>加载FBX模型</template>
-			</el-menu-item>
 		</el-menu>
 	</div>
 </template>
@@ -662,6 +655,20 @@ const drawPopWindow = function () {
 	ctx?.stroke();
 	console.log("canvas:", canvas.id, canvas);
 	return canvas.toDataURL();
+};
+
+const threeFunctions = function (type: string) {
+	switch (type) {
+		case "6-1":
+			threeInit();
+			break;
+		case "6-2":
+			threeLoadFbx();
+			break;
+
+		default:
+			break;
+	}
 };
 const threeInit = function () {
 	Three = new ZThree("threeEle", document.getElementById("mapContainer"));
