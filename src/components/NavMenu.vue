@@ -71,6 +71,8 @@
 					<el-menu-item index="7-6" @click="threeLearning('7-6')">6--双击控制全屏</el-menu-item>
 					<el-menu-item index="7-7" @click="threeLearning('7-7')">7--datGUI</el-menu-item>
 					<el-menu-item index="7-8" @click="threeLearning('7-8')">8--立方缓冲几何体</el-menu-item>
+					<el-menu-item index="7-9" @click="threeLearning('7-9')">9--立体三角</el-menu-item>
+					<el-menu-item index="7-10" @click="threeLearning('7-10')">10--几何材质</el-menu-item>
 				</el-menu-item-group>
 			</el-sub-menu>
 		</el-menu>
@@ -89,6 +91,8 @@ import {
 	douclickFullscreen,
 	datGUI,
 	geometory,
+	triangleExample,
+	basicMaterial,
 } from "../utils/threejs/learningc1";
 import { ref, getCurrentInstance } from "vue";
 import { getAssetsFile } from "@/utils/tools/unit";
@@ -725,6 +729,12 @@ const threeLearning = function (type: string) {
 			break;
 		case "7-8":
 			geometory();
+			break;
+		case "7-9":
+			triangleExample();
+			break;
+		case "7-10":
+			basicMaterial();
 			break;
 		default:
 			break;

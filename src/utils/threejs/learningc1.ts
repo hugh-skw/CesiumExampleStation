@@ -3,6 +3,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { gsap } from "gsap";
 
 import * as dat from "dat.gui";
+import { getAssetsFile } from "../tools/unit";
 export function init() {
 	// 1. 创建场景
 	const scene = new THREE.Scene();
@@ -259,7 +260,8 @@ export function datGUI() {
 
 	//**************************************/
 	const gui = new dat.GUI();
-	gui.add(cube.position, "x")
+	gui
+		.add(cube.position, "x")
 		.min(0)
 		.max(50)
 		.step(0.1)
@@ -329,12 +331,119 @@ export function geometory() {
 	const dom = document.getElementById("mapContainer");
 	dom!.innerHTML = "";
 	dom?.appendChild(renderer.domElement);
-
-	const cubeGeometry = new THREE.BoxGeometry(10, 10, 10);
+	// ************************************************************************
+	const geometry = new THREE.BufferGeometry();
+	const vertices = new Float32Array([-1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0]);
+	geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
 	const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-	const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+	const mesh = new THREE.Mesh(geometry, cubeMaterial);
+	scene.add(mesh);
+
+	function render() {
+		controls.update();
+		renderer.render(scene, camera);
+		requestAnimationFrame(render);
+	}
+	render();
+}
+
+export function triangleExample() {
+	const scene = new THREE.Scene();
+	const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+	camera.position.set(0, 0, 10);
+
+	const axesHelper = new THREE.AxesHelper(50);
+	scene.add(axesHelper);
+
+	const renderer = new THREE.WebGLRenderer();
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	const controls = new OrbitControls(camera, renderer.domElement);
+	controls.enableDamping = true;
+	const dom = document.getElementById("mapContainer");
+	dom!.innerHTML = "";
+	dom?.appendChild(renderer.domElement);
+	// ************************************************************************
+	for (let i = 0; i < 50; i++) {
+		// 每个三角形需要3个顶点，每个顶点对应3个值
+		const geometry = new THREE.BufferGeometry();
+		const positionArr = new Float32Array(9);
+		for (let j = 0; j < 9; j++) {
+			positionArr[j] = Math.random() * 10 - 5;
+		}
+		geometry.setAttribute("position", new THREE.BufferAttribute(positionArr, 3));
+		const material = new THREE.MeshBasicMaterial({
+			color: new THREE.Color(Math.random(), Math.random(), Math.random()),
+			transparent: true,
+			opacity: Math.random(),
+		});
+		const mesh = new THREE.Mesh(geometry, material);
+		scene.add(mesh);
+	}
+
+	function render() {
+		controls.update();
+		renderer.render(scene, camera);
+		requestAnimationFrame(render);
+	}
+	render();
+}
+
+export function basicMaterial() {
+	const scene = new THREE.Scene();
+	const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+	camera.position.set(0, 0, 10);
+
+	const axesHelper = new THREE.AxesHelper(50);
+	scene.add(axesHelper);
+
+	const renderer = new THREE.WebGLRenderer();
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	const controls = new OrbitControls(camera, renderer.domElement);
+	controls.enableDamping = true;
+	const dom = document.getElementById("mapContainer");
+	dom!.innerHTML = "";
+	dom?.appendChild(renderer.domElement);
+
+	// ************************************************************************
+	const cubeGeometry = new THREE.BoxGeometry(1, 1, 1); // three.module.js:50808 THREE.BoxBufferGeometry has been renamed to THREE.BoxGeometry.
+	// 纹理
+	const textureLoader = new THREE.TextureLoader();
+	const texture = textureLoader.load(getAssetsFile("textures/door.png"));
+	const alphaTexture = textureLoader.load(getAssetsFile("textures/door_transparent.png"));
+	// 纹理偏移
+	// texture.offset.set(0.5, 0.5);
+	// texture.offset.x = 0.5;
+	// texture.offset.y = 0.5;
+	// 纹理旋转
+	// texture.center.set(0.5, 0.5); // 设置旋转的中心点
+	// texture.rotation = Math.PI / 4; // 旋转 45°
+	// 纹理重复
+	// texture.repeat.set(2, 5); // 水平重复两次，竖直重复5次
+	// texture.wrapS = THREE.RepeatWrapping; // 设置包裹模式，将纹理无限重复（水平），另外还有镜像重复等
+	// texture.wrapT = THREE.RepeatWrapping; // 设置包裹模式，将纹理无限重复（竖直）
+	// 纹素覆盖算法
+	// texture.minFilter = THREE.NearestFilter;
+	// texture.magFilter = THREE.NearestFilter;
+	// 透明纹理
+
+	const basicMaterial = new THREE.MeshBasicMaterial({
+		color: "#fff",
+		map: texture,
+		alphaMap: alphaTexture,
+		transparent: true,
+		// opacity: 0.6,
+		side: THREE.DoubleSide, // 渲染两面
+		// aoMap: aoTexture,
+		// aoMapIntensity: 0.5, //	aoMap的强度
+	});
+	const cube = new THREE.Mesh(cubeGeometry, basicMaterial);
+	cubeGeometry.setAttribute("uv2", new THREE.BufferAttribute(cubeGeometry.attributes.uv.array, 2)); // aoMap需要第二组uv
 	scene.add(cube);
-	console.log(cube);
+
+	// 添加平面
+	const plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1), basicMaterial); // three.module.js:50919 THREE.PlaneBufferGeometry has been renamed to THREE.PlaneGeometry.
+	plane.position.set(2, 0, 0);
+	scene.add(plane);
 
 	function render() {
 		controls.update();
