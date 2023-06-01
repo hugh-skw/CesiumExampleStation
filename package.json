@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.0.10",
+    "@types/dat.gui": "^0.7.10",
+    "dat.gui": "^0.7.9",
     "element-plus": "^2.2.33",
     "gsap": "^3.11.5",
     "pinia": "^2.0.32",

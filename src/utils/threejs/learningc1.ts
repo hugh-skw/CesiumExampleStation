@@ -1,6 +1,8 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { gsap } from "gsap";
+
+import * as dat from "dat.gui";
 export function init() {
 	// 1. 创建场景
 	const scene = new THREE.Scene();
@@ -224,4 +226,120 @@ export function douclickFullscreen() {
 			document.exitFullscreen();
 		}
 	});
+}
+
+export function datGUI() {
+	// 1. 创建场景
+	const scene = new THREE.Scene();
+	// 2. 创建相机  角度、宽高比、近端、远端
+	const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+	// 设置相机位置
+	camera.position.set(0, 0, 200);
+	// 3. 添加物体
+	const cubeGeometry = new THREE.BoxGeometry(10, 10, 10);
+	const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+	const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+	scene.add(cube);
+	// 添加坐标轴辅助器
+	const axesHelper = new THREE.AxesHelper(50);
+	scene.add(axesHelper);
+
+	// 4. 初始化渲染器
+	const renderer = new THREE.WebGLRenderer();
+	// 设置渲染的尺寸大小
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	// 创建轨道控制器
+	const controls = new OrbitControls(camera, renderer.domElement);
+	// 设置控制器阻尼，需要在动画渲染时update
+	controls.enableDamping = true;
+	// 5. 渲染到dom
+	const dom = document.getElementById("mapContainer");
+	dom!.innerHTML = "";
+	dom?.appendChild(renderer.domElement);
+
+	//**************************************/
+	const gui = new dat.GUI();
+	gui.add(cube.position, "x")
+		.min(0)
+		.max(50)
+		.step(0.1)
+		.name("移动 x 轴")
+		.onChange((val) => {
+			console.log("当前x值:", val);
+		})
+		.onFinishChange((val) => {
+			console.log("完全停下x值:", val);
+		});
+	const params = {
+		color: "#ff0000",
+		fn: () => {
+			// 让 cube 运动
+			gsap.to(cube.position, { x: 45, duration: 3, yoyo: true, repeat: -1 });
+		},
+	};
+	gui.addColor(params, "color").onChange((val) => {
+		console.log("颜色修改:", val);
+		cube.material.color.set(val);
+	});
+	gui.add(cube, "visible").name("是否显示");
+	gui.add(params, "fn").name("点击立方体运动");
+	const folder = gui.addFolder("设置立方体");
+	folder.add(cube.material, "wireframe");
+
+	function render() {
+		controls.update();
+		renderer.render(scene, camera);
+		requestAnimationFrame(render);
+	}
+	render();
+	// resize 监听画面尺寸变化
+	window.addEventListener("resize", () => {
+		// 更新相机
+		camera.aspect = window.innerWidth / window.innerHeight;
+		// 更新相机的投影矩阵
+		camera.updateProjectionMatrix();
+		// 更新渲染器
+		renderer.setSize(window.innerWidth, window.innerHeight);
+		// 更新渲染器的像素比
+		renderer.setPixelRatio(window.devicePixelRatio);
+	});
+
+	window.addEventListener("dblclick", () => {
+		// 双击控制屏幕进入/退出全屏
+		if (!document.fullscreenElement) {
+			renderer.domElement.requestFullscreen();
+		} else {
+			document.exitFullscreen();
+		}
+	});
+}
+
+export function geometory() {
+	const scene = new THREE.Scene();
+	const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+	camera.position.set(0, 0, 200);
+
+	const axesHelper = new THREE.AxesHelper(50);
+	scene.add(axesHelper);
+
+	const renderer = new THREE.WebGLRenderer();
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	const controls = new OrbitControls(camera, renderer.domElement);
+	controls.enableDamping = true;
+	const dom = document.getElementById("mapContainer");
+	dom!.innerHTML = "";
+	dom?.appendChild(renderer.domElement);
+
+	const cubeGeometry = new THREE.BoxGeometry(10, 10, 10);
+	const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+	const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+	scene.add(cube);
+	console.log(cube);
+
+	function render() {
+		controls.update();
+		renderer.render(scene, camera);
+		requestAnimationFrame(render);
+	}
+	render();
 }

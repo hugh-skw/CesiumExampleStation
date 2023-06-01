@@ -34,8 +34,8 @@
 			<el-sub-menu index="2">
 				<template #title>
 					<i class="iconfont icon-moxingtiaodu menuItab" />
-					<span>模型调度</span></template
-				>
+					<span>模型调度</span>
+				</template>
 				<el-menu-item-group>
 					<el-menu-item index="2-1" @click="load3DTileset('2-1')">3dtiles模型</el-menu-item>
 				</el-menu-item-group>
@@ -69,6 +69,8 @@
 					<el-menu-item index="7-4" @click="threeLearning('7-4')">4--基础动画</el-menu-item>
 					<el-menu-item index="7-5" @click="threeLearning('7-5')">5--gsap动画插件</el-menu-item>
 					<el-menu-item index="7-6" @click="threeLearning('7-6')">6--双击控制全屏</el-menu-item>
+					<el-menu-item index="7-7" @click="threeLearning('7-7')">7--datGUI</el-menu-item>
+					<el-menu-item index="7-8" @click="threeLearning('7-8')">8--立方缓冲几何体</el-menu-item>
 				</el-menu-item-group>
 			</el-sub-menu>
 		</el-menu>
@@ -78,7 +80,16 @@
 <script lang="ts" setup>
 import * as Cesium from "cesium";
 import { parabolaFlowInit, roadRapidEffect, lineFlickerMaterial, startRain, startSnow, startFog, dynamicWall } from "@/utils/shaders";
-import { initHelper, init as learnInit, orbitControl, animateCube, gsapAnimation, douclickFullscreen } from "../utils/threejs/learningc1";
+import {
+	initHelper,
+	init as learnInit,
+	orbitControl,
+	animateCube,
+	gsapAnimation,
+	douclickFullscreen,
+	datGUI,
+	geometory,
+} from "../utils/threejs/learningc1";
 import { ref, getCurrentInstance } from "vue";
 import { getAssetsFile } from "@/utils/tools/unit";
 import type { Cartesian3 } from "cesium";
@@ -361,9 +372,9 @@ const createDialogCss = () => {
 		document.getElementById("app")!.appendChild(bubble);
 
 		/**
-     *
+	 *
 
-     */
+	 */
 		// trackPop = pickId.position._value;
 	}, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 };
@@ -708,6 +719,12 @@ const threeLearning = function (type: string) {
 			break;
 		case "7-6":
 			douclickFullscreen();
+			break;
+		case "7-7":
+			datGUI();
+			break;
+		case "7-8":
+			geometory();
 			break;
 		default:
 			break;
