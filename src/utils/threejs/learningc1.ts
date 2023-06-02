@@ -456,7 +456,7 @@ export function basicMaterial() {
 export function meshStandardMaterial() {
 	const scene = new THREE.Scene();
 	const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
-	camera.position.set(0, 0, 10);
+	camera.position.set(10, 10, 10);
 
 	const axesHelper = new THREE.AxesHelper(50);
 	scene.add(axesHelper);
@@ -506,6 +506,58 @@ export function meshStandardMaterial() {
 	const plane = new THREE.Mesh(planeGeometry, standardMaterial);
 	plane.position.set(3, 0, 0);
 	scene.add(plane);
+
+	function render() {
+		controls.update();
+		renderer.render(scene, camera);
+		requestAnimationFrame(render);
+	}
+	render();
+}
+
+export function textureLoading() {
+	const scene = new THREE.Scene();
+	const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+	camera.position.set(5, 5, 5);
+
+	const axesHelper = new THREE.AxesHelper(100);
+	scene.add(axesHelper);
+
+	const renderer = new THREE.WebGLRenderer();
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	const controls = new OrbitControls(camera, renderer.domElement);
+	controls.enableDamping = true;
+	const dom = document.getElementById("mapContainer");
+	dom!.innerHTML = "";
+	dom?.appendChild(renderer.domElement);
+	const gridHelper = new THREE.GridHelper(20, 20);
+	scene.add(gridHelper);
+
+	// ************************************************************************
+	const cubeGeometry = new THREE.BoxGeometry(1, 1, 1); // three.module.js:50808 THREE.BoxBufferGeometry has been renamed to THREE.BoxGeometry.
+	// 纹理
+	const onLoad = () => {
+		console.log("纹理加载完成");
+	};
+	const onProgress = (progress: any) => {
+		console.log("加载进度：", progress);
+	};
+	// 设置加载管理器
+	const loadingManager = new THREE.LoadingManager(onLoad, (url: string, num: number, total: number) => {
+		console.log("当前加载纹理：", url);
+		console.log("总体加载进度：", Number(((num / total) as number).toFixed(2)) * 100 + "%");
+	});
+	const textureLoader = new THREE.TextureLoader(loadingManager);
+	const texture = textureLoader.load(getAssetsFile("textures/door.png"), onLoad, onProgress);
+	const alphaTexture = textureLoader.load(getAssetsFile("textures/door_transparent.png"));
+	const basicMaterial = new THREE.MeshBasicMaterial({
+		color: "#fff",
+		map: texture,
+		alphaMap: alphaTexture,
+		transparent: true,
+	});
+	const cube = new THREE.Mesh(cubeGeometry, basicMaterial);
+	scene.add(cube);
 
 	function render() {
 		controls.update();
