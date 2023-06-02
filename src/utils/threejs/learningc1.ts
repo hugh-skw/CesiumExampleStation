@@ -441,7 +441,7 @@ export function basicMaterial() {
 	scene.add(cube);
 
 	// 添加平面
-	const plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1), basicMaterial); // three.module.js:50919 THREE.PlaneBufferGeometry has been renamed to THREE.PlaneGeometry.
+	const plane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), basicMaterial); // three.module.js:50919 THREE.PlaneBufferGeometry has been renamed to THREE.PlaneGeometry.
 	plane.position.set(2, 0, 0);
 	scene.add(plane);
 

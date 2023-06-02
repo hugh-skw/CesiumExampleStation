@@ -13,6 +13,7 @@
 		"skipLibCheck": true,
 		"noEmit": true,
 		"suppressImplicitAnyIndexErrors": true, //允许字符串用作下标
+		"ignoreDeprecations": "5.0", //允许字符串用作下标
 		"baseUrl": ".",
 		"allowJs": true,
 		"paths": {
