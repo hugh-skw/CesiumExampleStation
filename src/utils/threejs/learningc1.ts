@@ -75,7 +75,7 @@ export function animateCube() {
 	// 创建轨道控制器
 	new OrbitControls(camera, renderer.domElement);
 	const clock = new THREE.Clock();
-	function render(time: any) {
+	function render() {
 		// const t = (time / 1000) % 5;
 		// cube.position.x = t * 10;
 
@@ -102,7 +102,7 @@ export function animateCube() {
 		renderer.render(scene, camera);
 		requestAnimationFrame(render);
 	}
-	render({});
+	render();
 
 	// 5. 渲染到dom
 	const dom = document.getElementById("mapContainer");
@@ -445,6 +445,29 @@ export function basicMaterial() {
 	plane.position.set(2, 0, 0);
 	scene.add(plane);
 
+	function render() {
+		controls.update();
+		renderer.render(scene, camera);
+		requestAnimationFrame(render);
+	}
+	render();
+}
+
+export function meshStandardMaterial() {
+	const scene = new THREE.Scene();
+	const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+	camera.position.set(0, 0, 10);
+
+	const axesHelper = new THREE.AxesHelper(50);
+	scene.add(axesHelper);
+
+	const renderer = new THREE.WebGLRenderer();
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	const controls = new OrbitControls(camera, renderer.domElement);
+	controls.enableDamping = true;
+	const dom = document.getElementById("mapContainer");
+	dom!.innerHTML = "";
+	dom?.appendChild(renderer.domElement);
 	function render() {
 		controls.update();
 		renderer.render(scene, camera);
