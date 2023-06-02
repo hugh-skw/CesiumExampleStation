@@ -468,6 +468,8 @@ export function meshStandardMaterial() {
 	const dom = document.getElementById("mapContainer");
 	dom!.innerHTML = "";
 	dom?.appendChild(renderer.domElement);
+	const gridHelper = new THREE.GridHelper(20, 20);
+	scene.add(gridHelper);
 
 	//***************************************************
 	const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
@@ -499,7 +501,6 @@ export function meshStandardMaterial() {
 	directionaltLight.position.set(3, 3, 3);
 	// directionaltLight.target.position.set(0, 0, 0);
 	scene.add(directionaltLight);
-
 	// 设置第二平面
 	const planeGeometry = new THREE.PlaneGeometry(1, 1, 100, 100);
 	const plane = new THREE.Mesh(planeGeometry, standardMaterial);
