@@ -75,7 +75,7 @@ export function animateCube() {
 	// 创建轨道控制器
 	new OrbitControls(camera, renderer.domElement);
 	const clock = new THREE.Clock();
-	function render(time: number) {
+	function render(time: any) {
 		// const t = (time / 1000) % 5;
 		// cube.position.x = t * 10;
 
@@ -102,7 +102,7 @@ export function animateCube() {
 		renderer.render(scene, camera);
 		requestAnimationFrame(render);
 	}
-	render();
+	render({});
 
 	// 5. 渲染到dom
 	const dom = document.getElementById("mapContainer");
