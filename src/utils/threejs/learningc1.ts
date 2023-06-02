@@ -468,6 +468,44 @@ export function meshStandardMaterial() {
 	const dom = document.getElementById("mapContainer");
 	dom!.innerHTML = "";
 	dom?.appendChild(renderer.domElement);
+
+	//***************************************************
+	const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
+	const textureLoader = new THREE.TextureLoader();
+	const doorTexture = textureLoader.load(getAssetsFile("textures/door.png"));
+	const alphaTexture = textureLoader.load(getAssetsFile("textures/door_transparent.png"));
+	// 标准物理材质PBR，需要有光，否则是黑的
+	const standardMaterial = new THREE.MeshStandardMaterial({
+		color: "#ff0",
+		map: doorTexture,
+		alphaMap: alphaTexture,
+		transparent: true,
+		side: THREE.DoubleSide,
+		// displacementMap: ... // 置换函数
+		// displacementScale: 0.1 // 置换强度
+		// roughness: 0, // 粗糙度 0--完全光滑(如果需要使部分地方光滑,配合roughnessMap使用灰度贴图, 黑的地方粗糙,白的地方光滑)
+		// roughnessMap: ... // 粗糙度贴图
+		// metalness: 0, // 金属度 0--完全金属(如果需要使部分地方光滑,配合metalnessMap使用金属贴图, 黑的地方非金属,白的地方金属)
+		// metalnessMap: ... // 金属度贴图
+		// normalMap: ... // 法线贴图
+	});
+	const mesh = new THREE.Mesh(boxGeometry, standardMaterial);
+	scene.add(mesh);
+	// 添加环境光
+	const light = new THREE.AmbientLight("#FFFFFF", 0.3);
+	// scene.add(light);
+	// 添加直线光
+	const directionaltLight = new THREE.DirectionalLight("#FFFFFF", 1);
+	directionaltLight.position.set(3, 3, 3);
+	// directionaltLight.target.position.set(0, 0, 0);
+	scene.add(directionaltLight);
+
+	// 设置第二平面
+	const planeGeometry = new THREE.PlaneGeometry(1, 1, 100, 100);
+	const plane = new THREE.Mesh(planeGeometry, standardMaterial);
+	plane.position.set(3, 0, 0);
+	scene.add(plane);
+
 	function render() {
 		controls.update();
 		renderer.render(scene, camera);

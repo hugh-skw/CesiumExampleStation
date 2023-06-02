@@ -73,6 +73,7 @@
 					<el-menu-item index="7-8" @click="threeLearning('7-8')">8--立方缓冲几何体</el-menu-item>
 					<el-menu-item index="7-9" @click="threeLearning('7-9')">9--立体三角</el-menu-item>
 					<el-menu-item index="7-10" @click="threeLearning('7-10')">10--几何材质</el-menu-item>
+					<el-menu-item index="7-11" @click="threeLearning('7-11')">11--标准网格材质</el-menu-item>
 				</el-menu-item-group>
 			</el-sub-menu>
 		</el-menu>
@@ -93,6 +94,7 @@ import {
 	geometory,
 	triangleExample,
 	basicMaterial,
+	meshStandardMaterial,
 } from "../utils/threejs/learningc1";
 import { ref, getCurrentInstance } from "vue";
 import { getAssetsFile } from "@/utils/tools/unit";
@@ -735,6 +737,9 @@ const threeLearning = function (type: string) {
 			break;
 		case "7-10":
 			basicMaterial();
+			break;
+		case "7-11":
+			meshStandardMaterial();
 			break;
 		default:
 			break;
