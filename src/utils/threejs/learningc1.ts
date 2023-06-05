@@ -4,6 +4,10 @@ import { gsap } from "gsap";
 
 import * as dat from "dat.gui";
 import { getAssetsFile } from "../tools/unit";
+
+import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader";
+import { pl } from "element-plus/es/locale";
+
 export function init() {
 	// 1. 创建场景
 	const scene = new THREE.Scene();
@@ -558,6 +562,152 @@ export function textureLoading() {
 	});
 	const cube = new THREE.Mesh(cubeGeometry, basicMaterial);
 	scene.add(cube);
+
+	function render() {
+		controls.update();
+		renderer.render(scene, camera);
+		requestAnimationFrame(render);
+	}
+	render();
+}
+
+export function environmentTexture() {
+	const scene = new THREE.Scene();
+	const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+	camera.position.set(5, 5, 5);
+
+	const axesHelper = new THREE.AxesHelper(100);
+	scene.add(axesHelper);
+
+	const renderer = new THREE.WebGLRenderer();
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	const controls = new OrbitControls(camera, renderer.domElement);
+	controls.enableDamping = true;
+	const dom = document.getElementById("mapContainer");
+	dom!.innerHTML = "";
+	dom?.appendChild(renderer.domElement);
+	const gridHelper = new THREE.GridHelper(20, 20);
+	scene.add(gridHelper);
+
+	// ************************************************************************
+	// 纹理
+	const onLoad = () => {
+		console.log("纹理加载完成");
+	};
+	const onProgress = (progress: any) => {
+		console.log("加载进度：", progress);
+	};
+	// 设置加载管理器
+	const cubeTextureLoader = new THREE.CubeTextureLoader();
+	const px = getAssetsFile("textures/pos-x.jpg");
+	const py = getAssetsFile("textures/pos-y.jpg");
+	const pz = getAssetsFile("textures/pos-z.jpg");
+	const nx = getAssetsFile("textures/neg-x.jpg");
+	const ny = getAssetsFile("textures/neg-y.jpg");
+	const nz = getAssetsFile("textures/neg-z.jpg");
+	// const envPng = getAssetsFile("textures/envTexture.jpeg");
+	const envMapTexture = cubeTextureLoader.load([px, nx, py, ny, pz, nz]);
+	const sphereGeometry = new THREE.SphereGeometry(1, 20, 20);
+	const material = new THREE.MeshStandardMaterial({
+		metalness: 0.7,
+		roughness: 0.1,
+		envMap: envMapTexture,
+	});
+	const sphere = new THREE.Mesh(sphereGeometry, material);
+	scene.add(sphere);
+	scene.background = envMapTexture;
+	// scene.environment = envMapTexture;
+
+	// 环境光
+	const light = new THREE.AmbientLight("#FFFFFF", 0.8);
+	scene.add(light);
+
+	function render() {
+		controls.update();
+		renderer.render(scene, camera);
+		requestAnimationFrame(render);
+	}
+	render();
+}
+
+export function hdrPic() {
+	const scene = new THREE.Scene();
+	const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+	camera.position.set(5, 5, 5);
+
+	const axesHelper = new THREE.AxesHelper(100);
+	scene.add(axesHelper);
+	const renderer = new THREE.WebGLRenderer();
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	const controls = new OrbitControls(camera, renderer.domElement);
+	controls.enableDamping = true;
+	const dom = document.getElementById("mapContainer");
+	dom!.innerHTML = "";
+	dom?.appendChild(renderer.domElement);
+
+	// 加载hdr环境图
+	const rgbeLoader = new RGBELoader();
+	rgbeLoader
+		.loadAsync(getAssetsFile("textures/HdrOutdoorResidentialRiverwalkAfternoonClear001/HdrOutdoorResidentialRiverwalkAfternoonClear001_HDR_2K.hdr"))
+		.then((texture: any) => {
+			texture.mapping = THREE.EquirectangularReflectionMapping;
+			scene.background = texture;
+		});
+
+	function render() {
+		controls.update();
+		renderer.render(scene, camera);
+		requestAnimationFrame(render);
+	}
+	render();
+}
+
+export function lightShadow() {
+	const scene = new THREE.Scene();
+	const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+	camera.position.set(5, 5, 5);
+
+	const axesHelper = new THREE.AxesHelper(100);
+	scene.add(axesHelper);
+	const renderer = new THREE.WebGLRenderer();
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	const controls = new OrbitControls(camera, renderer.domElement);
+	controls.enableDamping = true;
+	const dom = document.getElementById("mapContainer");
+	dom!.innerHTML = "";
+	dom?.appendChild(renderer.domElement);
+
+	const sphereGeometry = new THREE.SphereGeometry(1, 20, 20);
+	const sphereMaterial = new THREE.MeshStandardMaterial({
+		// color: "Grey",
+	});
+	const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+	scene.add(sphere);
+
+	// 创建平面
+	const planeGeometry = new THREE.PlaneGeometry(10, 10);
+	const planeMaterial = new THREE.MeshStandardMaterial({
+		color: "Grey",
+	});
+	const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+	plane.position.y = -1;
+	plane.rotation.x = -Math.PI / 2;
+	scene.add(plane);
+
+	const light = new THREE.AmbientLight("#FFFFFF", 0.6);
+	scene.add(light);
+	const dLight = new THREE.DirectionalLight("#FFFFFF", 1);
+	dLight.position.set(3, 3, 3);
+	scene.add(dLight);
+
+	// 开启渲染器阴影计算
+	renderer.shadowMap.enabled = true;
+	// 设置光照投射阴影
+	dLight.castShadow = true;
+	// 设置物体投射阴影
+	sphere.castShadow = true;
+	// 设置物体接收阴影
+	plane.receiveShadow = true;
 
 	function render() {
 		controls.update();

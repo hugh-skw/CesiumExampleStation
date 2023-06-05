@@ -75,6 +75,9 @@
 					<el-menu-item index="7-10" @click="threeLearning('7-10')">10--几何材质</el-menu-item>
 					<el-menu-item index="7-11" @click="threeLearning('7-11')">11--标准网格材质</el-menu-item>
 					<el-menu-item index="7-12" @click="threeLearning('7-12')">12--纹理加载进度</el-menu-item>
+					<el-menu-item index="7-13" @click="threeLearning('7-13')">13--环境贴图</el-menu-item>
+					<el-menu-item index="7-14" @click="threeLearning('7-14')">14--hdr动图</el-menu-item>
+					<el-menu-item index="7-15" @click="threeLearning('7-15')">15--灯光与阴影的关系</el-menu-item>
 				</el-menu-item-group>
 			</el-sub-menu>
 		</el-menu>
@@ -97,6 +100,9 @@ import {
 	basicMaterial,
 	meshStandardMaterial,
 	textureLoading,
+	environmentTexture,
+	hdrPic,
+	lightShadow,
 } from "../utils/threejs/learningc1";
 import { ref, getCurrentInstance } from "vue";
 import { getAssetsFile } from "@/utils/tools/unit";
@@ -745,6 +751,15 @@ const threeLearning = function (type: string) {
 			break;
 		case "7-12":
 			textureLoading();
+			break;
+		case "7-13":
+			environmentTexture();
+			break;
+		case "7-14":
+			hdrPic();
+			break;
+		case "7-15":
+			lightShadow();
 			break;
 		default:
 			break;
