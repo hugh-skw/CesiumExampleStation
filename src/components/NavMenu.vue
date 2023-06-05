@@ -78,6 +78,8 @@
 					<el-menu-item index="7-13" @click="threeLearning('7-13')">13--环境贴图</el-menu-item>
 					<el-menu-item index="7-14" @click="threeLearning('7-14')">14--hdr动图</el-menu-item>
 					<el-menu-item index="7-15" @click="threeLearning('7-15')">15--灯光与阴影的关系</el-menu-item>
+					<el-menu-item index="7-16" @click="threeLearning('7-16')">16--聚光灯</el-menu-item>
+					<el-menu-item index="7-17" @click="threeLearning('7-17')">17--点光源</el-menu-item>
 				</el-menu-item-group>
 			</el-sub-menu>
 		</el-menu>
@@ -103,6 +105,8 @@ import {
 	environmentTexture,
 	hdrPic,
 	lightShadow,
+	spotLight,
+	pointLight,
 } from "../utils/threejs/learningc1";
 import { ref, getCurrentInstance } from "vue";
 import { getAssetsFile } from "@/utils/tools/unit";
@@ -760,6 +764,12 @@ const threeLearning = function (type: string) {
 			break;
 		case "7-15":
 			lightShadow();
+			break;
+		case "7-16":
+			spotLight();
+			break;
+		case "7-17":
+			pointLight();
 			break;
 		default:
 			break;

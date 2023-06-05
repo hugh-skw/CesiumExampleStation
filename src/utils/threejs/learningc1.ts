@@ -6,8 +6,6 @@ import * as dat from "dat.gui";
 import { getAssetsFile } from "../tools/unit";
 
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader";
-import { pl } from "element-plus/es/locale";
-
 export function init() {
 	// 1. 创建场景
 	const scene = new THREE.Scene();
@@ -665,7 +663,7 @@ export function hdrPic() {
 export function lightShadow() {
 	const scene = new THREE.Scene();
 	const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
-	camera.position.set(5, 5, 5);
+	camera.position.set(-5, 5, 5);
 
 	const axesHelper = new THREE.AxesHelper(100);
 	scene.add(axesHelper);
@@ -709,7 +707,238 @@ export function lightShadow() {
 	// 设置物体接收阴影
 	plane.receiveShadow = true;
 
+	// 投影的模糊度
+	dLight.shadow.radius = 20;
+	// 阴影贴图的分辨率
+	dLight.shadow.mapSize.set(1080, 1080);
+
+	// 设置平行光投射相机的属性
+	dLight.shadow.camera.near = 0.5;
+	dLight.shadow.camera.far = 500;
+	dLight.shadow.camera.top = 5;
+	dLight.shadow.camera.bottom = -5;
+	dLight.shadow.camera.left = -5;
+	dLight.shadow.camera.right = 5;
+
+	const gui = new dat.GUI();
+	gui
+		.add(dLight.shadow.camera, "near")
+		.min(0)
+		.max(10)
+		.step(0.3)
+		.onChange(() => {
+			dLight.shadow.camera.updateProjectionMatrix();
+		});
+
 	function render() {
+		controls.update();
+		renderer.render(scene, camera);
+		requestAnimationFrame(render);
+	}
+	render();
+}
+
+export function spotLight() {
+	const scene = new THREE.Scene();
+	const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+	camera.position.set(-5, 5, 5);
+	const axesHelper = new THREE.AxesHelper(100);
+	const renderer = new THREE.WebGLRenderer();
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	const controls = new OrbitControls(camera, renderer.domElement);
+	controls.enableDamping = true;
+	const dom = document.getElementById("mapContainer");
+	dom!.innerHTML = "";
+	dom?.appendChild(renderer.domElement);
+	scene.add(camera);
+	scene.add(axesHelper);
+
+	const sphereGeometry = new THREE.SphereGeometry(1, 20, 20);
+	const sphereMaterial = new THREE.MeshStandardMaterial({
+		// color: "Grey",
+	});
+	const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+	scene.add(sphere);
+
+	// 创建平面
+	const planeGeometry = new THREE.PlaneGeometry(50, 50);
+	const planeMaterial = new THREE.MeshStandardMaterial({
+		color: "Grey",
+	});
+	const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+	plane.position.y = -1;
+	plane.rotation.x = -Math.PI / 2;
+	scene.add(plane);
+
+	const light = new THREE.AmbientLight("#FFFFFF", 0.3);
+	scene.add(light);
+
+	// 点光源
+	// const pointLight = new THREE.PointLight();
+	// scene.add(pointLight);
+	// 聚光灯
+	const spotLight = new THREE.SpotLight("#FFFFFF", 0.7, 100, Math.PI / 6);
+	spotLight.position.set(5, 5, 5);
+	spotLight.shadow.radius = 1;
+	spotLight.intensity = 1;
+	spotLight.shadow.mapSize.set(2048, 2048);
+	spotLight.castShadow = true;
+	spotLight.penumbra = 0;
+	spotLight.decay = 0;
+	sphere.castShadow = true;
+	plane.receiveShadow = true;
+	renderer.shadowMap.enabled = true;
+	scene.add(spotLight);
+
+	const spotLightHelper = new THREE.SpotLightHelper(spotLight);
+	scene.add(spotLightHelper);
+
+	// 聚光灯始终聚焦到球
+	spotLight.target = sphere;
+
+	const gui = new dat.GUI();
+	gui
+		.add(sphere.position, "x")
+		.max(10)
+		.min(-10)
+		.step(0.1)
+		.onChange(() => {
+			spotLight.shadow.camera.updateProjectionMatrix();
+			spotLightHelper.update();
+		});
+	gui
+		.add(spotLight.shadow, "radius")
+		.max(30)
+		.min(5)
+		.step(0.1)
+		.onChange(() => {
+			spotLight.shadow.camera.updateProjectionMatrix();
+			spotLightHelper.update();
+		});
+	gui
+		.add(spotLight, "penumbra")
+		.max(1)
+		.min(0)
+		.step(0.1)
+		.onChange(() => {
+			spotLight.shadow.camera.updateProjectionMatrix();
+			spotLightHelper.update();
+		});
+	gui
+		.add(spotLight, "decay")
+		.max(5)
+		.min(0)
+		.step(0.1)
+		.onChange(() => {
+			spotLight.shadow.camera.updateProjectionMatrix();
+			spotLightHelper.update();
+		});
+	gui
+		.add(spotLight, "intensity")
+		.max(1)
+		.min(0)
+		.step(0.05)
+		.onChange(() => {
+			spotLight.shadow.camera.updateProjectionMatrix();
+			spotLightHelper.update();
+		});
+	// 场景中的阴影贴图
+	renderer.useLegacyLights = true;
+
+	function render() {
+		controls.update();
+		renderer.render(scene, camera);
+		requestAnimationFrame(render);
+	}
+	render();
+}
+
+export function pointLight() {
+	const scene = new THREE.Scene();
+	const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+	camera.position.set(-5, 5, 5);
+	const axesHelper = new THREE.AxesHelper(100);
+	const renderer = new THREE.WebGLRenderer();
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	const controls = new OrbitControls(camera, renderer.domElement);
+	controls.enableDamping = true;
+	const dom = document.getElementById("mapContainer");
+	dom!.innerHTML = "";
+	dom?.appendChild(renderer.domElement);
+	scene.add(camera);
+	scene.add(axesHelper);
+
+	const sphereGeometry = new THREE.SphereGeometry(1, 20, 20);
+	const sphereMaterial = new THREE.MeshStandardMaterial({
+		// color: "Grey",
+	});
+	const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+	scene.add(sphere);
+
+	// 创建平面
+	const planeGeometry = new THREE.PlaneGeometry(50, 50);
+	const planeMaterial = new THREE.MeshStandardMaterial({
+		color: "Grey",
+	});
+	const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+	plane.position.y = -1;
+	plane.rotation.x = -Math.PI / 2;
+	scene.add(plane);
+
+	const light = new THREE.AmbientLight("#FFFFFF", 0.3);
+	scene.add(light);
+
+	// 点光源
+	const smallBall = new THREE.Mesh(new THREE.SphereGeometry(0.1, 20, 20), new THREE.MeshBasicMaterial({ color: "#FF0000" }));
+	smallBall.position.set(6, 3, 3);
+	const pointLight = new THREE.PointLight("#FF0000", 1);
+	// pointLight.position.set(6, 3, 3);
+	smallBall.add(pointLight);
+	pointLight.castShadow = true;
+	const pointLightHelper = new THREE.PointLightHelper(pointLight);
+	scene.add(pointLightHelper);
+
+	sphere.castShadow = true;
+	plane.receiveShadow = true;
+	renderer.shadowMap.enabled = true;
+
+	pointLight.shadow.radius = 20;
+	scene.add(smallBall);
+	// scene.add(pointLight);
+	// pointLight.decay = 1;
+	const gui = new dat.GUI();
+	gui
+		.add(smallBall.position, "x")
+		.max(10)
+		.min(-10)
+		.step(0.1)
+		.onChange(() => {
+			pointLight.shadow.camera.updateProjectionMatrix();
+			pointLightHelper.update();
+		});
+	gui
+		.add(smallBall.position, "y")
+		.max(10)
+		.min(-10)
+		.step(0.1)
+		.onChange(() => {
+			pointLight.shadow.camera.updateProjectionMatrix();
+			pointLightHelper.update();
+		});
+	gui
+		.add(smallBall.position, "z")
+		.max(10)
+		.min(0)
+		.step(0.1)
+		.onChange(() => {
+			pointLight.shadow.camera.updateProjectionMatrix();
+			pointLightHelper.update();
+		});
+
+	const clock = new THREE.Clock();
+	function render() {
+		smallBall.position.x = Math.sin(clock.getElapsedTime()) * 2;
+		smallBall.position.z = Math.cos(clock.getElapsedTime()) * 2;
 		controls.update();
 		renderer.render(scene, camera);
 		requestAnimationFrame(render);
