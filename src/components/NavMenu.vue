@@ -113,6 +113,7 @@ import { getAssetsFile } from "@/utils/tools/unit";
 import type { Cartesian3 } from "cesium";
 import Bubble from "@/components/bubble/Bubble";
 import ZThree from "@/utils/threejs/publicFunctions";
+import * as dat from "dat.gui";
 
 const { proxy } = getCurrentInstance() as any; //获取上下文实例，ctx=vue2的this
 
@@ -503,13 +504,61 @@ const load3DTileset = (type: string) => {
 	}, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 };
 const add3dTiles = () => {
+	const gui = new dat.GUI();
 	var tileset: Cesium.Cesium3DTileset = window.viewer.scene.primitives.add(
 		new Cesium.Cesium3DTileset({
-			url: "http://124.70.11.35//model-zhouqu1/other3DTiles/tiles/clzj_gbz/tileset.json",
+			url: "http://124.70.11.35//model-zhouqu1/other3DTiles/tiles/azq_ljz/tileset.json",
 		})
 	);
 	tileset.readyPromise.then((t) => {
 		window.viewer.flyTo(t);
+		let ellipsoid = window.viewer.scene.globe.ellipsoid;
+		let boundingSphere = t.boundingSphere;
+		// let cartographic = Cesium.Cartographic.fromCartesian(boundingSphere.center);
+		let cartesian3 = boundingSphere.center;
+		let cartographic = ellipsoid.cartesianToCartographic(cartesian3);
+		let lng = Cesium.Math.toDegrees(cartographic.longitude);
+		let lat = Cesium.Math.toDegrees(cartographic.latitude);
+		var alt = cartographic.height;
+		let guiObject = {
+			longitude: lng,
+			latitude: lat,
+			height: alt,
+		};
+		gui
+			.add(guiObject, "longitude")
+			.max(135)
+			.min(73)
+			.step(0.00001)
+			.onChange((val) => {
+				let surface = Cesium.Cartesian3.fromRadians(val, guiObject.latitude, 0.0);
+				let offset = Cesium.Cartesian3.fromRadians(val, guiObject.latitude, guiObject.height);
+				let translation = Cesium.Cartesian3.subtract(offset, surface, new Cesium.Cartesian3());
+				t.modelMatrix = Cesium.Matrix4.fromTranslation(translation);
+			});
+		gui
+			.add(guiObject, "latitude")
+			.max(53)
+			.min(3)
+			.step(0.00001)
+			.onChange((val) => {
+				let surface = Cesium.Cartesian3.fromRadians(guiObject.longitude, val, 0.0);
+				let offset = Cesium.Cartesian3.fromRadians(guiObject.longitude, val, guiObject.height);
+				let translation = Cesium.Cartesian3.subtract(offset, surface, new Cesium.Cartesian3());
+				t.modelMatrix = Cesium.Matrix4.fromTranslation(translation);
+			});
+		gui
+			.add(guiObject, "height")
+			.max(6000)
+			.min(0)
+			.step(1)
+			.onChange((val) => {
+				console.log(guiObject);
+				let surface = Cesium.Cartesian3.fromRadians(guiObject.longitude, guiObject.latitude, 0.0);
+				let offset = Cesium.Cartesian3.fromRadians(guiObject.longitude, guiObject.latitude, val);
+				let translation = Cesium.Cartesian3.subtract(offset, surface, new Cesium.Cartesian3());
+				t.modelMatrix = Cesium.Matrix4.fromTranslation(translation);
+			});
 	});
 };
 // 加载图片,异步方法
