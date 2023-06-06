@@ -945,3 +945,51 @@ export function pointLight() {
 	}
 	render();
 }
+
+export function vrRoom() {
+	const scene = new THREE.Scene();
+	const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+	camera.position.z = 5;
+	const renderer = new THREE.WebGLRenderer();
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	const controls = new OrbitControls(camera, renderer.domElement);
+	controls.enableDamping = true;
+	const dom = document.getElementById("mapContainer");
+	dom!.innerHTML = "";
+	dom?.appendChild(renderer.domElement);
+	scene.add(camera);
+
+	// 添加立方体(采用分别拍照的方式)
+	// const geometry = new THREE.BoxGeometry(10, 10, 10);
+	// const arr = ["4_l", "4_r", "4_u", "4_d", "4_b", "4_f"];
+	// const boxMaterials: Array<THREE.MeshBasicMaterial> = [];
+	// arr.forEach((item) => {
+	// 	const texture = new THREE.TextureLoader().load(getAssetsFile("vrRoomImgs/living/" + item + ".jpg"));
+	// 	if (item === "4_u" || item === "4_d") {
+	// 		texture.rotation = Math.PI;
+	// 		texture.center = new THREE.Vector2(0.5, 0.5);
+	// 	}
+
+	// 	boxMaterials.push(new THREE.MeshBasicMaterial({ map: texture }));
+	// });
+	// const cube = new THREE.Mesh(geometry, boxMaterials);
+	// cube.geometry.scale(1, 1, -1);
+	// scene.add(cube);
+
+	// 添加球(采用一张展开图的方式)
+	const sphereGeometry = new THREE.SphereGeometry(5, 32, 32);
+	const rgbeLoader = new RGBELoader();
+	rgbeLoader.load(getAssetsFile("vrRoomImgs/hdr/living.hdr"), (texture) => {
+		const sphereMaterial = new THREE.MeshBasicMaterial({ map: texture });
+		const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+		sphere.geometry.scale(1, 1, -1);
+		scene.add(sphere);
+	});
+
+	function render() {
+		controls.update();
+		renderer.render(scene, camera);
+		requestAnimationFrame(render);
+	}
+	render();
+}

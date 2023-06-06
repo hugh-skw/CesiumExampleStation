@@ -80,6 +80,7 @@
 					<el-menu-item index="7-15" @click="threeLearning('7-15')">15--灯光与阴影的关系</el-menu-item>
 					<el-menu-item index="7-16" @click="threeLearning('7-16')">16--聚光灯</el-menu-item>
 					<el-menu-item index="7-17" @click="threeLearning('7-17')">17--点光源</el-menu-item>
+					<el-menu-item index="7-18" @click="threeLearning('7-18')">18--VR看房示例</el-menu-item>
 				</el-menu-item-group>
 			</el-sub-menu>
 		</el-menu>
@@ -107,6 +108,7 @@ import {
 	lightShadow,
 	spotLight,
 	pointLight,
+	vrRoom,
 } from "../utils/threejs/learningc1";
 import { ref, getCurrentInstance } from "vue";
 import { getAssetsFile } from "@/utils/tools/unit";
@@ -819,6 +821,9 @@ const threeLearning = function (type: string) {
 			break;
 		case "7-17":
 			pointLight();
+			break;
+		case "7-18":
+			vrRoom();
 			break;
 		default:
 			break;
