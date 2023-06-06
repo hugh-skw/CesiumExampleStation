@@ -82,6 +82,7 @@
 					<el-menu-item index="7-17" @click="threeLearning('7-17')">17--点光源</el-menu-item>
 					<el-menu-item index="7-18" @click="threeLearning('7-18')">18--VR看房示例</el-menu-item>
 					<el-menu-item index="7-19" @click="threeLearning('7-19')">19--岛屿</el-menu-item>
+					<el-menu-item index="7-20" @click="threeLearning('7-20')">20--汽车模型展示</el-menu-item>
 				</el-menu-item-group>
 			</el-sub-menu>
 		</el-menu>
@@ -111,6 +112,7 @@ import {
 	pointLight,
 	vrRoom,
 	isLand,
+	car,
 } from "../utils/threejs/learningc1";
 import { ref, getCurrentInstance } from "vue";
 import { getAssetsFile } from "@/utils/tools/unit";
@@ -829,6 +831,9 @@ const threeLearning = function (type: string) {
 			break;
 		case "7-19":
 			isLand();
+			break;
+		case "7-20":
+			car();
 			break;
 		default:
 			break;

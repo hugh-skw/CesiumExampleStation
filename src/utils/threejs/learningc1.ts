@@ -1006,7 +1006,10 @@ export function isLand() {
 	// 更新摄像头的矩阵
 	camera.updateProjectionMatrix();
 	scene.add(camera);
-	const renderer = new THREE.WebGLRenderer({ antialias: true }); // 抗锯齿
+	const renderer = new THREE.WebGLRenderer({
+		antialias: true, // 抗锯齿
+		logarithmicDepthBuffer: true, // 对数深度缓冲区
+	});
 	// renderer.outputColorSpace = THREE.output;
 	renderer.setSize(window.innerWidth, window.innerHeight);
 	const controls = new OrbitControls(camera, renderer.domElement);
@@ -1045,7 +1048,16 @@ export function isLand() {
 			video.play();
 			sky.material.map = new THREE.VideoTexture(video);
 			sky.material.map.needsUpdate = true;
+			scene.background = sphereMaterial.map;
+			scene.environment = sphereMaterial.map;
 		}
+	});
+
+	// 载入环境纹理
+	const hdrLoader = new RGBELoader();
+	hdrLoader.loadAsync(getAssetsFile("islandResources/050.hdr")).then((texture) => {
+		texture.mapping = THREE.EquirectangularReflectionMapping;
+		scene.environment = texture;
 	});
 
 	// 创建水面
@@ -1060,6 +1072,8 @@ export function isLand() {
 	// 旋转水面至水平
 	water.rotation.x = -Math.PI / 2;
 	scene.add(water);
+	// 调整水面高度
+	water.position.y = 3;
 
 	// 添加小岛模型
 	// 实例化gltf
@@ -1073,4 +1087,120 @@ export function isLand() {
 		// island.position.y = -50;
 		scene.add(gltf.scene);
 	});
+}
+
+export function car() {
+	const scene = new THREE.Scene();
+	scene.background = new THREE.Color("#ccc");
+	// scene.environment = new THREE.Color("#ccc");
+	const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+	camera.position.set(0, 5, 5);
+	const renderer = new THREE.WebGLRenderer();
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	const controls = new OrbitControls(camera, renderer.domElement);
+	controls.enableDamping = true;
+	const dom = document.getElementById("mapContainer");
+	dom!.innerHTML = "";
+	dom?.appendChild(renderer.domElement);
+	scene.add(camera);
+	function render() {
+		controls.update();
+		renderer.render(scene, camera);
+		requestAnimationFrame(render);
+	}
+	render();
+
+	// 添加网格地面
+	const gridHelper = new THREE.GridHelper(20, 20);
+	scene.add(gridHelper);
+
+	const ambientLight = new THREE.AmbientLight("#ffffff", 1);
+	scene.add(ambientLight);
+	const dLight1 = new THREE.DirectionalLight("#ffffff", 1);
+	dLight1.position.z = 20;
+	// const dLight2 = new THREE.DirectionalLight("#ffffff", 1);
+	// dLight2.position.z = -20;
+	const dLight3 = new THREE.DirectionalLight("#ffffff", 1);
+	dLight3.position.y = 20;
+	const dLight4 = new THREE.DirectionalLight("#ffffff", 1);
+	dLight4.position.y = -20;
+	const dLight5 = new THREE.DirectionalLight("#ffffff", 1);
+	dLight5.position.x = 20;
+	const dLight6 = new THREE.DirectionalLight("#ffffff", 1);
+	dLight6.position.x = -20;
+	scene.add(...[dLight1, dLight3, dLight4, dLight5, dLight6]);
+
+	const wheels = [];
+	let carBody, frontCar, hoodCar, glassCar;
+	const bodyMaterial = new THREE.MeshPhysicalMaterial({
+		color: 0xff0000,
+		metalness: 1,
+		roughness: 0.4,
+		clearcoat: 1,
+		clearcoatRoughness: 0,
+	});
+	const frontMaterial = new THREE.MeshPhysicalMaterial({
+		color: 0xff0000,
+		metalness: 1,
+		roughness: 0.4,
+		clearcoat: 1,
+		clearcoatRoughness: 0,
+	});
+	const hoodMaterial = new THREE.MeshPhysicalMaterial({
+		color: 0xff0000,
+		metalness: 1,
+		roughness: 0.4,
+		clearcoat: 1,
+		clearcoatRoughness: 0,
+	});
+	const wheelMaterial = new THREE.MeshPhysicalMaterial({
+		color: 0xff0000,
+		metalness: 1,
+		roughness: 0.1,
+	});
+	const glassMaterial = new THREE.MeshPhysicalMaterial({
+		color: 0xffffff,
+		transmission: 1,
+		metalness: 0,
+		roughness: 0.1,
+		transparent: true,
+	});
+
+	const gltfLoader = new GLTFLoader();
+	const dracoLoader = new DRACOLoader();
+	dracoLoader.setDecoderPath(new URL(`../../utils/draco/`, import.meta.url).href + "/");
+	gltfLoader.setDRACOLoader(dracoLoader);
+	gltfLoader.load(getAssetsFile("models/bmw01.glb"), (gltf) => {
+		gltf.scene.traverse((child: any) => {
+			if (child.isMesh) {
+				console.log(child.name);
+			}
+			if (child.isMesh && child.name.includes("轮毂")) {
+				child.material = wheelMaterial;
+				wheels.push(child);
+			}
+			if (child.isMesh && child.name.includes("Mesh002")) {
+				child.material = bodyMaterial;
+				carBody = child;
+			}
+			if (child.isMesh && child.name.includes("前脸")) {
+				child.material = frontMaterial;
+				frontCar = child;
+			}
+			if (child.isMesh && child.name.includes("引擎盖_1")) {
+				child.material = hoodMaterial;
+				hoodCar = child;
+			}
+			if (child.isMesh && child.name.includes("挡风玻璃")) {
+				child.material = glassMaterial;
+				glassCar = child;
+			}
+		});
+
+		scene.add(gltf.scene);
+	});
+
+	setTimeout(() => {
+		bodyMaterial.color.set("#44ffaa");
+	}, 5000);
 }
