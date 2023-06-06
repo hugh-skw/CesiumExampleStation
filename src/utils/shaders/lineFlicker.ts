@@ -31,8 +31,8 @@ class LineFlickerMaterialProperty {
 			result = {};
 		}
 
-		result.color = Cesium.Property.getValueOrDefault(this._color, time, this.color, result.color);
-		result.speed = Cesium.Property.getValueOrDefault(this._speed, time, this.speed, result.speed);
+		result.color = Cesium.Property!.getValueOrDefault(this._color, time, this.color, result.color);
+		result.speed = Cesium.Property!.getValueOrDefault(this._speed, time, this.speed, result.speed);
 		return result;
 	}
 
@@ -40,18 +40,18 @@ class LineFlickerMaterialProperty {
 		return (
 			this === other ||
 			(other instanceof LineFlickerMaterialProperty &&
-				Cesium.Property.equals(this._color, other._color) &&
-				Cesium.Property.equals(this._speed, other._speed))
+				Cesium.Property!.equals(this._color, other._color) &&
+				Cesium.Property!.equals(this._speed, other._speed))
 		);
 	}
 }
 
 export function lineFlickerMaterial(viewer: Cesium.Viewer, color: any, speed: number) {
 	Object.defineProperties(LineFlickerMaterialProperty.prototype, {
-		color: Cesium.createPropertyDescriptor("color"),
-		speed: Cesium.createPropertyDescriptor("speed"),
+		color: Cesium!.createPropertyDescriptor("color"),
+		speed: Cesium!.createPropertyDescriptor("speed"),
 	});
-	Cesium.Material._materialCache.addMaterial("LineFlickerMaterialProperty", {
+	Cesium.Material!._materialCache.addMaterial("LineFlickerMaterialProperty", {
 		fabric: {
 			type: "LineFlickerMaterialProperty",
 			uniforms: {

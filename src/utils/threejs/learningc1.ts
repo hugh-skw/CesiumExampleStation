@@ -272,10 +272,10 @@ export function datGUI() {
 		.step(0.1)
 		.name("移动 x 轴")
 		.onChange((val) => {
-			console.log("当前x值:", val);
+			// console.log("当前x值:", val);
 		})
 		.onFinishChange((val) => {
-			console.log("完全停下x值:", val);
+			// console.log("完全停下x值:", val);
 		});
 	const params = {
 		color: "#ff0000",
@@ -285,7 +285,7 @@ export function datGUI() {
 		},
 	};
 	gui.addColor(params, "color").onChange((val) => {
-		console.log("颜色修改:", val);
+		// console.log("颜色修改:", val);
 		cube.material.color.set(val);
 	});
 	gui.add(cube, "visible").name("是否显示");
@@ -542,15 +542,15 @@ export function textureLoading() {
 	const cubeGeometry = new THREE.BoxGeometry(1, 1, 1); // three.module.js:50808 THREE.BoxBufferGeometry has been renamed to THREE.BoxGeometry.
 	// 纹理
 	const onLoad = () => {
-		console.log("纹理加载完成");
+		// console.log("纹理加载完成");
 	};
 	const onProgress = (progress: any) => {
-		console.log("加载进度：", progress);
+		// console.log("加载进度：", progress);
 	};
 	// 设置加载管理器
 	const loadingManager = new THREE.LoadingManager(onLoad, (url: string, num: number, total: number) => {
-		console.log("当前加载纹理：", url);
-		console.log("总体加载进度：", Number(((num / total) as number).toFixed(2)) * 100 + "%");
+		// console.log("当前加载纹理：", url);
+		// console.log("总体加载进度：", Number(((num / total) as number).toFixed(2)) * 100 + "%");
 	});
 	const textureLoader = new THREE.TextureLoader(loadingManager);
 	const texture = textureLoader.load(getAssetsFile("textures/door.png"), onLoad, onProgress);
@@ -593,10 +593,10 @@ export function environmentTexture() {
 	// ************************************************************************
 	// 纹理
 	const onLoad = () => {
-		console.log("纹理加载完成");
+		// console.log("纹理加载完成");
 	};
 	const onProgress = (progress: any) => {
-		console.log("加载进度：", progress);
+		// console.log("加载进度：", progress);
 	};
 	// 设置加载管理器
 	const cubeTextureLoader = new THREE.CubeTextureLoader();
@@ -1173,7 +1173,7 @@ export function car() {
 	gltfLoader.load(getAssetsFile("models/bmw01.glb"), (gltf) => {
 		gltf.scene.traverse((child: any) => {
 			if (child.isMesh) {
-				console.log(child.name);
+				// console.log(child.name);
 			}
 			if (child.isMesh && child.name.includes("轮毂")) {
 				child.material = wheelMaterial;

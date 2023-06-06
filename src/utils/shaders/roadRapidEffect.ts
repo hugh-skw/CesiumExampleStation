@@ -52,13 +52,13 @@ export function roadRapidEffect(viewer: Cesium.Viewer, duration: number, image: 
 				return this._definitionChanged;
 			},
 		},
-		color: Cesium.createPropertyDescriptor("color"),
-		duration: Cesium.createPropertyDescriptor("duration"),
+		color: Cesium!.createPropertyDescriptor("color"),
+		duration: Cesium!.createPropertyDescriptor("duration"),
 	});
 	// Cesium.Spriteline1MaterialProperty = Spriteline1MaterialProperty;
 	// st :二维纹理坐标
 	// czm_material：保存可用于照明的材质信息
-	Cesium.Material._materialCache.addMaterial("Spriteline1", {
+	Cesium.Material!._materialCache.addMaterial("Spriteline1", {
 		fabric: {
 			type: "Spriteline1",
 			uniforms: {

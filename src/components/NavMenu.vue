@@ -338,7 +338,7 @@ const createDialogCss = () => {
 
 						// 绘制方法
 						const draw = () => {
-							console.log(prevX, prevY);
+							// console.log(prevX, prevY);
 							// 创建新的路径
 							ctx.beginPath();
 							// 创建子路径,并将起点移动到上一帧绘制到达的坐标点
@@ -418,7 +418,7 @@ const drawRoom1 = async function (imageSrc: string) {
 	const image: any = await loadImage(imageSrc);
 	let timex = 100;
 	const setIntervalId = setInterval(() => {
-		console.log("timex", timex);
+		// console.log("timex", timex);
 		if (timex >= w + 2) {
 			clearInterval(setIntervalId);
 			return;
@@ -506,7 +506,7 @@ const load3DTileset = (type: string) => {
 	let handler = new Cesium.ScreenSpaceEventHandler(window.viewer.scene.canvas);
 	handler.setInputAction(function (event: Cesium.ScreenSpaceEventHandler.PositionedEvent) {
 		let pick = window.viewer.scene.pick(event.position);
-		console.log("当前拾取的坐标：", pick);
+		// console.log("当前拾取的坐标：", pick);
 	}, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 };
 const add3dTiles = () => {
@@ -559,7 +559,7 @@ const add3dTiles = () => {
 			.min(0)
 			.step(1)
 			.onChange((val) => {
-				console.log(guiObject);
+				// console.log(guiObject);
 				let surface = Cesium.Cartesian3.fromRadians(guiObject.longitude, guiObject.latitude, 0.0);
 				let offset = Cesium.Cartesian3.fromRadians(guiObject.longitude, guiObject.latitude, val);
 				let translation = Cesium.Cartesian3.subtract(offset, surface, new Cesium.Cartesian3());
@@ -640,14 +640,14 @@ const createDitheringBillboard = () => {
 				if (count > 100000) {
 					count = 0;
 				}
-				console.log;
+				// console.log();
 			}, 10);
 		}
 		const pick = window.viewer.scene.pick(event.endPosition);
 		if (!pick) {
-			console.log("空白处");
+			// console.log("空白处");
 			if (mouseMoveEntity) {
-				console.log("清除晃动");
+				// console.log("清除晃动");
 				// mouseMoveEntity.billboard!.rotation = 0;
 				mouseMoveEntity.billboard!.scale = 0.24;
 				mouseMoveEntity.billboard!.pixelOffset = new Cesium.Cartesian2(0, 0);
@@ -689,7 +689,7 @@ const createDitheringBillboard = () => {
 	handler2.setInputAction(function (event: Cesium.ScreenSpaceEventHandler.PositionedEvent) {
 		const pick = window.viewer.scene.pick(event.position);
 		let position = window.viewer.scene.camera.pickEllipsoid(event.position, window.viewer.scene.globe.ellipsoid);
-		console.log(position);
+		// console.log(position);
 		if (!pick) {
 			return;
 		}
@@ -749,7 +749,7 @@ const drawPopWindow = function () {
 	ctx?.lineTo(x, y);
 	ctx!.strokeStyle = "yellow";
 	ctx?.stroke();
-	console.log("canvas:", canvas.id, canvas);
+	// console.log("canvas:", canvas.id, canvas);
 	return canvas.toDataURL();
 };
 

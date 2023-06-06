@@ -23,14 +23,14 @@ export default class Bubble {
 		const title = "固定枪机";
 		const state = "在线";
 		const id = val.id;
-		console.log(id);
+		// console.log(id);
 		this.vmInstance = createVNode(Label, {
 			title,
 			state,
 			id,
 		}); //根据模板创建一个面板
 
-		console.log(this.vmInstance);
+		// console.log(this.vmInstance);
 		render(this.vmInstance, val.viewer.cesiumWidget.container);
 		this.vmInstance.el.closeEvent = (e: any) => {
 			this.windowClose();

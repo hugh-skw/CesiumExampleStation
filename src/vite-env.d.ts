@@ -7,3 +7,5 @@ declare global {
 		viewer: Viewer;
 	}
 }
+
+declare module "cesium";
