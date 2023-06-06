@@ -6,6 +6,9 @@ import * as dat from "dat.gui";
 import { getAssetsFile } from "../tools/unit";
 
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader";
+import { Water } from "three/examples/jsm/objects/Water2";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
 export function init() {
 	// 1. 创建场景
 	const scene = new THREE.Scene();
@@ -992,4 +995,82 @@ export function vrRoom() {
 		requestAnimationFrame(render);
 	}
 	render();
+}
+
+export function isLand() {
+	const scene = new THREE.Scene();
+	const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
+	camera.position.set(-50, 50, 130);
+	// 更新摄像头宽高比例
+	camera.aspect = window.innerWidth / window.innerHeight;
+	// 更新摄像头的矩阵
+	camera.updateProjectionMatrix();
+	scene.add(camera);
+	const renderer = new THREE.WebGLRenderer({ antialias: true }); // 抗锯齿
+	// renderer.outputColorSpace = THREE.output;
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	const controls = new OrbitControls(camera, renderer.domElement);
+	window.addEventListener("resize", () => {
+		camera.aspect = window.innerWidth / window.innerHeight;
+		camera.updateProjectionMatrix();
+		renderer.setSize(window.innerWidth, window.innerHeight);
+	});
+	const dom = document.getElementById("mapContainer");
+	dom!.innerHTML = "";
+	dom?.appendChild(renderer.domElement);
+
+	function render() {
+		controls.update();
+		renderer.render(scene, camera);
+		requestAnimationFrame(render);
+	}
+	render();
+
+	const sphereGeometry = new THREE.SphereGeometry(1000, 60, 60);
+	const sphereMaterial = new THREE.MeshBasicMaterial({
+		map: new THREE.TextureLoader().load(getAssetsFile("islandResources/sky.jpg")),
+	});
+
+	const sky = new THREE.Mesh(sphereGeometry, sphereMaterial);
+	sky.geometry.scale(1, 1, -1);
+	scene.add(sky);
+
+	// 创建视频纹理
+	const video = document.createElement("video");
+	video.src = getAssetsFile("islandResources/sky.mp4");
+	video.muted = true;
+	video.loop = true;
+	window.addEventListener("click", (e) => {
+		if (video.paused) {
+			video.play();
+			sky.material.map = new THREE.VideoTexture(video);
+			sky.material.map.needsUpdate = true;
+		}
+	});
+
+	// 创建水面
+	const waterGeometry = new THREE.CircleGeometry(300, 64);
+	const water = new Water(waterGeometry, {
+		textureWidth: 1024,
+		textureHeight: 1024,
+		color: 0xeeeeff,
+		flowDirection: new THREE.Vector2(1, 1),
+		scale: 1,
+	});
+	// 旋转水面至水平
+	water.rotation.x = -Math.PI / 2;
+	scene.add(water);
+
+	// 添加小岛模型
+	// 实例化gltf
+	const gltfLoader = new GLTFLoader();
+	const dracoLoader = new DRACOLoader();
+	// 添加draco载入库
+	dracoLoader.setDecoderPath(new URL(`../../utils/draco/`, import.meta.url).href + "/");
+	gltfLoader.setDRACOLoader(dracoLoader);
+	gltfLoader.load(getAssetsFile("islandResources/model/island2.glb"), (gltf) => {
+		// const island = gltf.scene;
+		// island.position.y = -50;
+		scene.add(gltf.scene);
+	});
 }

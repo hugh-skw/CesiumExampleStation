@@ -86,7 +86,7 @@ onMounted(() => {
 </script>
 <style lang="scss" scoped>
 #mapContainer {
-	width: 100%;
+	width: calc(100% - 200px);
 	height: 100%;
 }
 </style>

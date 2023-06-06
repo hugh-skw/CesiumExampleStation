@@ -81,6 +81,7 @@
 					<el-menu-item index="7-16" @click="threeLearning('7-16')">16--聚光灯</el-menu-item>
 					<el-menu-item index="7-17" @click="threeLearning('7-17')">17--点光源</el-menu-item>
 					<el-menu-item index="7-18" @click="threeLearning('7-18')">18--VR看房示例</el-menu-item>
+					<el-menu-item index="7-19" @click="threeLearning('7-19')">19--岛屿</el-menu-item>
 				</el-menu-item-group>
 			</el-sub-menu>
 		</el-menu>
@@ -109,6 +110,7 @@ import {
 	spotLight,
 	pointLight,
 	vrRoom,
+	isLand,
 } from "../utils/threejs/learningc1";
 import { ref, getCurrentInstance } from "vue";
 import { getAssetsFile } from "@/utils/tools/unit";
@@ -825,6 +827,9 @@ const threeLearning = function (type: string) {
 		case "7-18":
 			vrRoom();
 			break;
+		case "7-19":
+			isLand();
+			break;
 		default:
 			break;
 	}
@@ -834,9 +839,15 @@ const threeLearning = function (type: string) {
 <style scoped lang="scss">
 #leftNav {
 	// background: url('/src/assets/nav_bac.jpg') no-repeat;
+	// border: 0;
+	.el-menu-vertical-demo {
+		width: 200px;
+		overflow-y: scroll;
+		overflow-x: hidden;
+	}
 	.el-menu-vertical-demo:not(.el-menu--collapse) {
 		width: 200px;
-		min-height: 400px;
+		// min-height: 400px;
 
 		.menuItab {
 			margin-right: 10px;
