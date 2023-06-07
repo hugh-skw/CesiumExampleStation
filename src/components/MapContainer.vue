@@ -5,7 +5,7 @@
 import * as Cesium from "cesium";
 import { Viewer } from "cesium";
 import { onMounted } from "vue";
-
+window.Cesium = Cesium;
 Cesium.Ion.defaultAccessToken =
 	"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI4ODE2MTJmNi02NjA4LTRmOWYtODhiNi1jYjZhYWQ0NTZjZWYiLCJpZCI6ODYzODEsImlhdCI6MTY0Nzc3NTE0OX0.RM0iXXF2qCSAiqfLBRY2siP-gSMGgfHxQTMRX6WSH2A";
 // 设置Cesium相机默认位置在中国区域上方
@@ -60,7 +60,7 @@ onMounted(() => {
 			shadows: Cesium.ShadowMode.DISABLED, //是否显示光照阴影，默认为否
 			// distanceDisplayCondition: new Cesium.DistanceDisplayCondition(100.0, 2000000.0), //显示的视角距离条件，在该范围内显示，范围不显示，默认为空
 			classificationType: Cesium.ClassificationType.BOTH,
-			zIndex: 0, //显示深度，越大表示图层在上
+			// zIndex: 0, //显示深度，越大表示图层在上
 		},
 	});
 	viewer.entities.add({
@@ -78,7 +78,7 @@ onMounted(() => {
 			shadows: Cesium.ShadowMode.DISABLED, //是否显示光照阴影，默认为否
 			// distanceDisplayCondition: new Cesium.DistanceDisplayCondition(100.0, 2000000.0), //显示的视角距离条件，在该范围内显示，范围不显示，默认为空
 			classificationType: Cesium.ClassificationType.BOTH,
-			zIndex: 0, //显示深度，越大表示图层在上
+			// zIndex: 0, //显示深度，越大表示图层在上
 		},
 	});
 	window.viewer = viewer;

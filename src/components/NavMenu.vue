@@ -84,6 +84,7 @@
 					<el-menu-item index="7-19" @click="threeLearning('7-19')">19--岛屿</el-menu-item>
 					<el-menu-item index="7-20" @click="threeLearning('7-20')">20--汽车模型展示</el-menu-item>
 					<el-menu-item index="7-21" @click="threeLearning('7-21')">21--球形机器人</el-menu-item>
+					<el-menu-item index="7-22" @click="threeLearning('7-22')">22--space官网</el-menu-item>
 				</el-menu-item-group>
 			</el-sub-menu>
 		</el-menu>
@@ -122,6 +123,8 @@ import type { Cartesian3 } from "cesium";
 import Bubble from "@/components/bubble/Bubble";
 import ZThree from "@/utils/threejs/publicFunctions";
 import * as dat from "dat.gui";
+import { useRouter } from "vue-router";
+const router = useRouter();
 
 const { proxy } = getCurrentInstance() as any; //获取上下文实例，ctx=vue2的this
 
@@ -840,9 +843,16 @@ const threeLearning = function (type: string) {
 		case "7-21":
 			ballRobot();
 			break;
+		case "7-22":
+			coolWebsite();
+			break;
 		default:
 			break;
 	}
+};
+const coolWebsite = () => {
+	const routeData = router.resolve({ path: "/three/coolWebsite" });
+	window.open(routeData.href);
 };
 </script>
 
