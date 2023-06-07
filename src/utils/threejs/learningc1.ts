@@ -3,7 +3,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { gsap } from "gsap";
 
 import * as dat from "dat.gui";
-import { getAssetsFile } from "../tools/unit";
+import { getAssetsFile, getUtilFile } from "../tools/unit";
 
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader";
 import { Water } from "three/examples/jsm/objects/Water2";
@@ -645,7 +645,6 @@ export function hdrPic() {
 	const dom = document.getElementById("mapContainer");
 	dom!.innerHTML = "";
 	dom?.appendChild(renderer.domElement);
-
 	// 加载hdr环境图
 	const rgbeLoader = new RGBELoader();
 	rgbeLoader
@@ -1080,7 +1079,7 @@ export function isLand() {
 	const gltfLoader = new GLTFLoader();
 	const dracoLoader = new DRACOLoader();
 	// 添加draco载入库
-	dracoLoader.setDecoderPath(new URL(`../../utils/draco/`, import.meta.url).href + "/");
+	dracoLoader.setDecoderPath(getUtilFile("draco/"));
 	gltfLoader.setDRACOLoader(dracoLoader);
 	gltfLoader.load(getAssetsFile("islandResources/model/island2.glb"), (gltf) => {
 		// const island = gltf.scene;
@@ -1168,7 +1167,9 @@ export function car() {
 
 	const gltfLoader = new GLTFLoader();
 	const dracoLoader = new DRACOLoader();
-	dracoLoader.setDecoderPath(new URL(`../../utils/draco/`, import.meta.url).href + "/");
+	// console.log(getUtilFile("draco/").replace("@fs/", "") + "/");
+	// console.log();
+	dracoLoader.setDecoderPath(getUtilFile("draco/"));
 	gltfLoader.setDRACOLoader(dracoLoader);
 	gltfLoader.load(getAssetsFile("models/bmw01.glb"), (gltf) => {
 		gltf.scene.traverse((child: any) => {

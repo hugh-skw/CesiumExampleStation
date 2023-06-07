@@ -34,7 +34,7 @@ class DynamicWallMaterialProperty {
 		if (!Cesium.defined(result)) {
 			result = {};
 		}
-		result.color = Cesium.Property.getValueOrClonedDefault(this._color, time, this.color, result.color);
+		result.color = (Cesium as any).Property.getValueOrClonedDefault(this._color, time, this.color, result.color);
 		if (this.trailImage) {
 			result.image = this.trailImage;
 		} else {
@@ -49,13 +49,13 @@ class DynamicWallMaterialProperty {
 		return result;
 	}
 	equals(other: any) {
-		return this === other || (other instanceof DynamicWallMaterialProperty && Cesium.Property.equals(this._color, other._color));
+		return this === other || (other instanceof DynamicWallMaterialProperty && (Cesium as any).Property.equals(this._color, other._color));
 	}
 }
 
 export function dynamicWall(viewer: Cesium.Viewer, positions: any) {
 	Object.defineProperties(DynamicWallMaterialProperty.prototype, {
-		color: Cesium.createPropertyDescriptor("color"),
+		color: (Cesium as any).createPropertyDescriptor("color"),
 	});
 
 	const cusSource =
@@ -72,7 +72,7 @@ export function dynamicWall(viewer: Cesium.Viewer, positions: any) {
                                                 material.emission = fragColor.rgb;\n\
                                                 return material;\n\
                                                 }";
-	Cesium.Material._materialCache.addMaterial("DynamicWall", {
+	(Cesium as any).Material._materialCache.addMaterial("DynamicWall", {
 		fabric: {
 			type: "DynamicWall",
 			uniforms: {

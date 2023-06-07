@@ -843,8 +843,6 @@ const threeLearning = function (type: string) {
 
 <style scoped lang="scss">
 #leftNav {
-	// background: url('/src/assets/nav_bac.jpg') no-repeat;
-	// border: 0;
 	.el-menu-vertical-demo {
 		width: 200px;
 		overflow-y: scroll;

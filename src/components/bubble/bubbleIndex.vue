@@ -45,7 +45,7 @@ let props = defineProps({
 		default: "001",
 	},
 });
-const { proxy, ctx } = getCurrentInstance();
+const { proxy, ctx } = getCurrentInstance() as any;
 const closeClick = () => {
 	proxy.$el.closeEvent();
 };

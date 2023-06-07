@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vue-tsc && vite build && node ./copyDraco.js",
     "preview": "vite preview"
   },
   "dependencies": {
