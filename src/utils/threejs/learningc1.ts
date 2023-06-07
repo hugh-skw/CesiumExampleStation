@@ -3,12 +3,13 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { gsap } from "gsap";
 
 import * as dat from "dat.gui";
-import { getAssetsFile, getUtilFile } from "../tools/unit";
+import { getAssetsFile, getGltfDracoDir } from "../tools/unit";
 
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader";
 import { Water } from "three/examples/jsm/objects/Water2";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
+import { Reflector } from "three/examples/jsm/objects/Reflector";
 export function init() {
 	// 1. 创建场景
 	const scene = new THREE.Scene();
@@ -1079,7 +1080,7 @@ export function isLand() {
 	const gltfLoader = new GLTFLoader();
 	const dracoLoader = new DRACOLoader();
 	// 添加draco载入库
-	dracoLoader.setDecoderPath(getUtilFile("draco/"));
+	dracoLoader.setDecoderPath(getGltfDracoDir());
 	gltfLoader.setDRACOLoader(dracoLoader);
 	gltfLoader.load(getAssetsFile("islandResources/model/island2.glb"), (gltf) => {
 		// const island = gltf.scene;
@@ -1167,9 +1168,9 @@ export function car() {
 
 	const gltfLoader = new GLTFLoader();
 	const dracoLoader = new DRACOLoader();
-	// console.log(getUtilFile("draco/").replace("@fs/", "") + "/");
+	// console.log(getGltfDracoDir().replace("@fs/", "") + "/");
 	// console.log();
-	dracoLoader.setDecoderPath(getUtilFile("draco/"));
+	dracoLoader.setDecoderPath(getGltfDracoDir());
 	gltfLoader.setDRACOLoader(dracoLoader);
 	gltfLoader.load(getAssetsFile("models/bmw01.glb"), (gltf) => {
 		gltf.scene.traverse((child: any) => {
@@ -1201,7 +1202,88 @@ export function car() {
 		scene.add(gltf.scene);
 	});
 
-	setTimeout(() => {
-		bodyMaterial.color.set("#44ffaa");
-	}, 5000);
+	// setTimeout(() => {
+	// 	bodyMaterial.color.set("#44ffaa");
+	// }, 5000);
+}
+
+export function ballRobot() {
+	const scene = new THREE.Scene();
+	// scene.background = new THREE.Color("#ccc");
+	const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+	camera.position.set(0, 5, 5);
+	const renderer = new THREE.WebGLRenderer();
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	const controls = new OrbitControls(camera, renderer.domElement);
+	controls.enableDamping = true;
+	const axesHelper = new THREE.AxesHelper(10);
+	scene.add(axesHelper);
+	const dom = document.getElementById("mapContainer");
+	dom!.innerHTML = "";
+	dom?.appendChild(renderer.domElement);
+	scene.add(camera);
+	function render() {
+		controls.update();
+		renderer.render(scene, camera);
+		requestAnimationFrame(render);
+	}
+	render();
+
+	const rgbeLoader = new RGBELoader();
+	rgbeLoader.loadAsync(getAssetsFile("ballRobot/sky12.hdr")).then((texture) => {
+		texture.mapping = THREE.EquirectangularReflectionMapping;
+		scene.background = texture;
+		scene.environment = texture;
+	});
+
+	const dLight1 = new THREE.DirectionalLight();
+	dLight1.position.y = 3;
+	scene.add(dLight1);
+
+	// 加载机器人
+	const gltfLoader = new GLTFLoader();
+	const dracoLoader = new DRACOLoader();
+	dracoLoader.setDecoderPath(getGltfDracoDir());
+	gltfLoader.setDRACOLoader(dracoLoader);
+	gltfLoader.load(
+		getAssetsFile("ballRobot/robot.glb"),
+		(gltf) => {
+			const robot = gltf.scene;
+			robot.scale.set(0.8, 0.8, 0.8);
+			robot.position.set(0, 0, 0);
+			scene.add(robot);
+		},
+		(xhr) => {
+			console.log(Number((xhr.loaded / xhr.total).toFixed(2)) * 100 + "%");
+		}
+	);
+
+	// 添加光阵
+	const video = document.createElement("video");
+	video.src = getAssetsFile("ballRobot/zp2.mp4");
+	video.loop = true;
+	video.muted = true;
+	video.play();
+	const videoTexture = new THREE.VideoTexture(video);
+	const videoPlaneGeometry = new THREE.PlaneGeometry(16, 9);
+	const videoMaterial = new THREE.MeshBasicMaterial({
+		map: videoTexture,
+		transparent: true,
+		side: THREE.DoubleSide,
+		alphaMap: videoTexture,
+	});
+	const videoMesh = new THREE.Mesh(videoPlaneGeometry, videoMaterial);
+	videoMesh.position.y = 0.2;
+	videoMesh.rotation.x = -Math.PI / 2;
+	scene.add(videoMesh);
+
+	// 添加反射平面
+	const reflectGeometry = new THREE.PlaneGeometry(100, 100);
+	const reflectPlane = new Reflector(reflectGeometry, {
+		textureHeight: window.innerHeight,
+		textureWidth: window.innerWidth,
+		color: 0x332222,
+	});
+	reflectPlane.rotation.x = -Math.PI / 2;
+	scene.add(reflectPlane);
 }

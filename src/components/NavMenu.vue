@@ -83,6 +83,7 @@
 					<el-menu-item index="7-18" @click="threeLearning('7-18')">18--VR看房示例</el-menu-item>
 					<el-menu-item index="7-19" @click="threeLearning('7-19')">19--岛屿</el-menu-item>
 					<el-menu-item index="7-20" @click="threeLearning('7-20')">20--汽车模型展示</el-menu-item>
+					<el-menu-item index="7-21" @click="threeLearning('7-21')">21--球形机器人</el-menu-item>
 				</el-menu-item-group>
 			</el-sub-menu>
 		</el-menu>
@@ -113,6 +114,7 @@ import {
 	vrRoom,
 	isLand,
 	car,
+	ballRobot,
 } from "../utils/threejs/learningc1";
 import { ref, getCurrentInstance } from "vue";
 import { getAssetsFile } from "@/utils/tools/unit";
@@ -834,6 +836,9 @@ const threeLearning = function (type: string) {
 			break;
 		case "7-20":
 			car();
+			break;
+		case "7-21":
+			ballRobot();
 			break;
 		default:
 			break;
