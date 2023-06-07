@@ -34,19 +34,19 @@ const copy = (sd, td) => {
 	}
 };
 
-const run = async (sourceDir, targetDir) => {
-	const startTime = await new Date().getTime();
+const run = (sourceDir, targetDir) => {
+	const startTime = new Date().getTime();
 	console.log(!fs.existsSync(sourceDir));
 	if (!fs.existsSync(sourceDir)) {
 		throw error("no such file or directory");
 	} else if (!fs.existsSync(targetDir)) {
-		await fs.mkdirSync(targetDir, { recursive: true }, (err) => console.log(err));
-		await copy(sourceDir, targetDir);
+		fs.mkdirSync(targetDir, { recursive: true }, (err) => console.log(err));
+		copy(sourceDir, targetDir);
 	} else {
-		await copy(sourceDir, targetDir);
+		copy(sourceDir, targetDir);
 	}
 
-	const endTime = await new Date().getTime();
+	const endTime = new Date().getTime();
 	console.log("耗时:", ((endTime - startTime) / 1000).toFixed(2) + "s");
 };
 pathArr.forEach((pathItem) => {
