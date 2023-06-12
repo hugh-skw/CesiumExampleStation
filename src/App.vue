@@ -4,6 +4,14 @@
 </template>
 
 <style>
+.origin-button-class {
+	font-size: 14px;
+	width: 120px;
+	height: 32px;
+	border: 1px solid #ffffff;
+	border-radius: 2px;
+}
+
 .bubble_box {
 	position: absolute;
 	top: 50%;

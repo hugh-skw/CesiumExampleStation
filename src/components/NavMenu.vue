@@ -40,15 +40,19 @@
 					<el-menu-item index="2-1" @click="load3DTileset('2-1')">3dtiles模型</el-menu-item>
 				</el-menu-item-group>
 			</el-sub-menu>
-
 			<el-menu-item index="3">
 				<i class="iconfont icon-layer menuItab" />
 				<template #title>图层加载</template>
 			</el-menu-item>
-			<el-menu-item index="4" @click="createDialogCss">
-				<i class="iconfont icon-layer menuItab" />
-				<template #title>弹窗样式</template>
-			</el-menu-item>
+			<el-sub-menu index="4">
+				<template #title>
+					<i class="iconfont icon-layer menuItab" />
+					<span>空间分析</span>
+				</template>
+				<el-menu-item-group>
+					<el-menu-item index="4-1" @click="spaceAnalysis('4-1')">剖面分析</el-menu-item>
+				</el-menu-item-group>
+			</el-sub-menu>
 			<el-menu-item index="5" @click="createDitheringBillboard">
 				<i class="iconfont icon-layer menuItab" />
 				<template #title>鼠标悬浮billboard</template>
@@ -123,6 +127,8 @@ import type { Cartesian3 } from "cesium";
 import Bubble from "@/components/bubble/Bubble";
 import ZThree from "@/utils/threejs/publicFunctions";
 import * as dat from "dat.gui";
+import { initMapContainer } from "@/utils/cesiumTools/initMapContainer";
+import { ProfileAnalyse } from "@/utils/spaceAnalysis/analysis";
 import { useRouter } from "vue-router";
 const router = useRouter();
 
@@ -256,6 +262,20 @@ const drawCanvas = function () {
 	// ctx2.lineWidth = 10;
 	ctx2.fill();
 	return canvas;
+};
+const spaceAnalysis = function (type: string) {
+	switch (type) {
+		case "4-1":
+			profileAnalyse();
+			break;
+	}
+};
+
+const profileAnalyse = function () {
+	initMapContainer().then((viewer) => {
+		const analyse = new ProfileAnalyse();
+		analyse.createDom(viewer);
+	});
 };
 
 const createDialogCss = () => {
@@ -514,13 +534,10 @@ const load3DTileset = (type: string) => {
 		// console.log("当前拾取的坐标：", pick);
 	}, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 };
-const add3dTiles = () => {
+const add3dTiles = async () => {
 	const gui = new dat.GUI();
-	var tileset: Cesium.Cesium3DTileset = window.viewer.scene.primitives.add(
-		new Cesium.Cesium3DTileset({
-			url: "http://124.70.11.35//model-zhouqu1/other3DTiles/tiles/azq_ljz/tileset.json",
-		})
-	);
+	const tileset = await Cesium.Cesium3DTileset.fromUrl("http://124.70.11.35//model-zhouqu1/other3DTiles/tiles/azq_ljz/tileset.json");
+	window.viewer.scene.primitives.add(tileset);
 	tileset.readyPromise.then((t) => {
 		window.viewer.flyTo(t);
 		let ellipsoid = window.viewer.scene.globe.ellipsoid;

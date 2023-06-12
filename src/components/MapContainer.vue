@@ -3,13 +3,14 @@
 </template>
 <script setup lang="ts">
 import * as Cesium from "cesium";
-import { Viewer } from "cesium";
 import { onMounted } from "vue";
 window.Cesium = Cesium;
+Cesium.Ion.defaultAccessToken =
+	"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI4ODE2MTJmNi02NjA4LTRmOWYtODhiNi1jYjZhYWQ0NTZjZWYiLCJpZCI6ODYzODEsImlhdCI6MTY0Nzc3NTE0OX0.RM0iXXF2qCSAiqfLBRY2siP-gSMGgfHxQTMRX6WSH2A";
 // 设置Cesium相机默认位置在中国区域上方
 Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(90, -20, 110, 90);
 onMounted(() => {
-	const viewer = new Viewer("mapContainer", {
+	const viewer = new Cesium.Viewer("mapContainer", {
 		infoBox: false,
 		contextOptions: {
 			requestWebgl1: true,
@@ -18,14 +19,17 @@ onMounted(() => {
 		// 	url: "http://cache1.arcgisonline.cn/arcgis/rest/services/ChinaOnlineStreetPurplishBlue/MapServer",
 		// 	// url: "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
 		// }),
-		imageryProvider: new Cesium.UrlTemplateImageryProvider({
-			url: "https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
-			// layer: "tdtVecBasicLayer",
-			// style: "default",
-			// format: "image/png",
-			// tileMatrixSetID: "GoogleMapsCompatible",
-			// show: false,
-		}),
+		baseLayer: new Cesium.ImageryLayer(
+			new Cesium.UrlTemplateImageryProvider({
+				url: "https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
+				// layer: "tdtVecBasicLayer",
+				// style: "default",
+				// format: "image/png",
+				// tileMatrixSetID: "GoogleMapsCompatible",
+				// show: false,
+			}),
+			{}
+		),
 	});
 	viewer.imageryLayers.addImageryProvider(
 		new Cesium.UrlTemplateImageryProvider({
