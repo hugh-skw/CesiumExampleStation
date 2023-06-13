@@ -13,10 +13,8 @@ class ProfileAnalyse {
 		this.analyseResult = null;
 	}
 
-	createDom(viewer: Cesium.Viewer): void {
-		// viewer = viewer;
+	createDom(): void {
 		const mapContainer = document.getElementById("mapContainer");
-
 		const div = document.createElement("div");
 		div.style.setProperty("position", "absolute");
 		div.style.setProperty("right", "10px");
@@ -36,16 +34,26 @@ class ProfileAnalyse {
 		drawButton.type = "button";
 		drawButton.value = "绘制";
 		drawButton.onclick = () => {
-			this.draw(viewer);
+			this.draw(window.viewer);
 		};
 
-		const clearButton = document.createElement("input");
-		clearButton.className = "origin-button-class";
-		clearButton.type = "button";
-		clearButton.value = "清除";
+		const locationButton = document.createElement("input");
+		locationButton.className = "origin-button-class";
+		locationButton.type = "button";
+		locationButton.value = "定位到山区";
+		locationButton.onclick = () => {
+			window.viewer.camera.setView({
+				destination: new Cesium.Cartesian3(300022.7053867932, 5680883.4961813, 2975043.885830753),
+				orientation: {
+					heading: 6.2499299033728155,
+					pitch: -0.9919257270489399,
+					roll: 0,
+				},
+			});
+		};
 
+		div.appendChild(locationButton);
 		div.appendChild(drawButton);
-		div.appendChild(clearButton);
 	}
 
 	draw(viewer: Cesium.Viewer) {
@@ -273,12 +281,17 @@ class ProfileAnalyse {
 	}
 	//设置Echart数据
 	setEchartsData(e: any) {
+		(window.viewer as any).animation.container.style.visibility = "hidden";
+		(window.viewer as any).timeline.container.style.visibility = "hidden";
+		(window.viewer as any)._cesiumWidget._creditContainer.style.display = "none";
 		const t = e.arrPoint;
 		const chartData = {
+			backgroundColor: "#2d3143",
 			grid: {
 				left: 10,
-				right: 10,
+				right: 20,
 				bottom: 10,
+				top: 20,
 				containLabel: !0,
 			},
 			dataZoom: [
@@ -310,26 +323,34 @@ class ProfileAnalyse {
 						"</label><br />");
 				},
 			},
-			xAxis: [
-				{
-					name: "行程",
-					type: "category",
-					boundaryGap: !1,
-					axisLine: {
-						show: !1,
-					},
-					axisLabel: {
-						show: !1,
-					},
-					data: e.arrLX,
+			xAxis: {
+				name: "行程",
+				type: "category",
+				// interval: e.arrLX[e.arrLX.length - 1] / 5,
+				// min: 0,
+				// max: e.arrLX[e.arrLX.length - 1],
+				boundaryGap: !1,
+				axisLine: {
+					show: 1,
 				},
-			],
+				axisLabel: {
+					// show: !1,
+					formatter: (value: any, index: any) => {
+						return Number(value).toFixed(2);
+						// console.log(value, index);
+					},
+					color: "#fff",
+				},
+				data: e.arrLX,
+			},
+
 			yAxis: [
 				{
 					type: "value",
 					axisLabel: {
-						rotate: 60,
+						// rotate: 60,
 						formatter: "{value} 米",
+						color: "#fff",
 					},
 				},
 			],
@@ -370,7 +391,7 @@ class ProfileAnalyse {
 		echartsDiv.style.width = "calc(100% - 200px)";
 		echartsDiv.style.height = "300px";
 		echartsDiv.style.position = "absolute";
-		echartsDiv.style.bottom = "100px";
+		echartsDiv.style.bottom = "0";
 		echartsDiv.style.right = "0";
 		echartsDiv.id = "profileAnalyse-echarts";
 		document.getElementById("mapContainer")!.appendChild(echartsDiv);

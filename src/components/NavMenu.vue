@@ -272,10 +272,9 @@ const spaceAnalysis = function (type: string) {
 };
 
 const profileAnalyse = function () {
-	initMapContainer().then((viewer) => {
-		const analyse = new ProfileAnalyse();
-		analyse.createDom(viewer);
-	});
+	const viewer = initMapContainer();
+	const analyse = new ProfileAnalyse();
+	analyse.createDom();
 };
 
 const createDialogCss = () => {
