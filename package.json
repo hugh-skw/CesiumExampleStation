@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.0.10",
+    "@turf/turf": "^6.5.0",
     "@types/dat.gui": "^0.7.10",
+    "@types/turf": "^3.5.32",
     "dat.gui": "^0.7.9",
     "echarts": "^5.4.2",
     "element-plus": "^2.2.33",

@@ -1,5 +1,6 @@
 import * as Cesium from "cesium";
 import * as echarts from "echarts";
+import * as turf from "@turf/turf";
 class ProfileAnalyse {
 	handler: any;
 	polyline_point_arr: number[];
@@ -66,7 +67,6 @@ class ProfileAnalyse {
 			const lat = Cesium.Math.toDegrees(cartographic.latitude);
 			const lon = Cesium.Math.toDegrees(cartographic.longitude);
 			const height = cartographic.height;
-			console.log(cartographic);
 			// 判断是否定义（是否可以获取到空间坐标）
 			if (Cesium.defined(cartesian)) {
 				// 将点添加进保存线的坐标的数组中，鼠标停止移动的时添加的点和，点击时候添加的点，坐标一样
@@ -98,7 +98,7 @@ class ProfileAnalyse {
 					// 判断是否已经开始绘制动态线，已经开始的话，则可以动态拾取鼠标移动的点，修改点的坐标
 					if (this.temporary_polyline_entity) {
 						// 只要元素点大于二，每次就删除二个点，因为实时动态的点是添加上去的
-						if (this.polyline_point_arr.length > 2) {
+						if (this.polyline_point_arr.length > 3) {
 							// 删除数组最后两个元素（鼠标移动添加进去的点）
 							this.polyline_point_arr.pop();
 							this.polyline_point_arr.pop();
@@ -115,7 +115,7 @@ class ProfileAnalyse {
 		}, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
 		//鼠标右键--结束绘制
-		this.handler.setInputAction((event: any) => {
+		this.handler.setInputAction(async (event: any) => {
 			// 取消鼠标移动监听
 			this.handler.removeInputAction(Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 			// 清除动态绘制的线
@@ -126,16 +126,14 @@ class ProfileAnalyse {
 			this.draw_polyline(viewer);
 			// 剖面分析
 			const pointsLength = this.polyline_point_arr.length;
-			// console.log(this.polyline_point_arr);
 			const start = Cesium.Cartesian3.fromDegreesArrayHeights([this.polyline_point_arr[0], this.polyline_point_arr[1], this.polyline_point_arr[2]]);
 			const end = Cesium.Cartesian3.fromDegreesArrayHeights([
 				this.polyline_point_arr[pointsLength - 3],
 				this.polyline_point_arr[pointsLength - 2],
 				this.polyline_point_arr[pointsLength - 1],
 			]);
-			this.analyseResult = this.profileAnalyse(viewer, start[0], end[0]);
+			this.analyseResult = await this.profileAnalyse(viewer, start[0], end[0]);
 			this.setEchartsData(this.analyseResult);
-			console.log(this.analyseResult);
 			// 清空线点数组，用于下次绘制
 			this.polyline_point_arr = [];
 			// 清除所有事件
@@ -155,7 +153,7 @@ class ProfileAnalyse {
 		// polyline_point_arr[polyline_point_arr.length - 2] = polyline_point_arr[0];
 		// polyline_point_arr[polyline_point_arr.length - 1] = polyline_point_arr[1];
 		// 两个点以上才能绘制成线
-		if (this.polyline_point_arr.length >= 2) {
+		if (this.polyline_point_arr.length >= 3) {
 			const polyline_point_entity = viewer.entities.add({
 				polyline: {
 					// Cesium.Cartesian3.fromDegreesArray([经度1, 纬度1, 经度2, 纬度2,])
@@ -196,7 +194,7 @@ class ProfileAnalyse {
 	}
 
 	//剖面分析
-	profileAnalyse(viewer: Cesium.Viewer, start: any, end: any) {
+	async profileAnalyse(viewer: Cesium.Viewer, start: any, end: any) {
 		const profile: any = {
 			arrLX: [],
 			ponits: [],
@@ -204,30 +202,47 @@ class ProfileAnalyse {
 			arrHB: [],
 			distance: 0,
 		};
-		const startPoint = Cesium.Cartographic.fromCartesian(start);
-		const endPoint = Cesium.Cartographic.fromCartesian(end);
-		profile.arrLX.push(0);
-		profile.ponits.push(startPoint);
-		profile.arrPoint.push(this.getDegrees(viewer, startPoint));
-		profile.arrHB.push(startPoint.height);
-		// 插值100个点，点越多模拟越精确，但是效率会低
-		const count = 100;
-		for (let i = 1; i < count; i++) {
-			// debugger;
-			const cart = Cesium.Cartesian3.lerp(start, end, i / count, new Cesium.Cartesian3());
-			const cartographicCart = Cesium.Cartographic.fromCartesian(cart);
-			const disc = this.distance(viewer, profile.ponits[i - 1], cartographicCart);
-			profile.distance = profile.distance + disc;
-			profile.ponits.push(cartographicCart);
-			profile.arrLX.push(profile.arrLX[i - 1] + disc);
-
-			profile.arrPoint.push(this.getDegrees(viewer, cart));
-			profile.arrHB.push(cartographicCart.height);
+		const startGraphic = Cesium.Cartographic.fromCartesian(start);
+		const endGraphic = Cesium.Cartographic.fromCartesian(end);
+		const startPoint = {
+			lon: Cesium.Math.toDegrees(startGraphic.longitude),
+			lat: Cesium.Math.toDegrees(startGraphic.latitude),
+		};
+		const endPoint = {
+			lon: Cesium.Math.toDegrees(endGraphic.longitude),
+			lat: Cesium.Math.toDegrees(endGraphic.latitude),
+		};
+		const distanceBetweenStartEnd = turf.distance(turf.point([startPoint.lon, startPoint.lat]), turf.point([endPoint.lon, endPoint.lat]), {
+			units: "miles",
+		});
+		profile.distance = distanceBetweenStartEnd;
+		for (let i = 0; i < 100; i++) {
+			profile.arrLX.push(i * (distanceBetweenStartEnd / 100));
 		}
-		profile.ponits.push(endPoint);
-		profile.arrLX.push(profile.arrLX[profile.arrLX.length - 1] + this.distance(viewer, profile.ponits[profile.ponits.length - 1], endPoint));
-		profile.arrPoint.push(this.getDegrees(viewer, endPoint));
-		profile.arrHB.push(endPoint.height);
+		const splicePointsFeatures = turf.lineChunk(
+			turf.lineString([
+				[startPoint.lon, startPoint.lat],
+				[endPoint.lon, endPoint.lat],
+			]),
+			distanceBetweenStartEnd / 100,
+			{
+				units: "miles",
+			}
+		).features;
+		const splicePointsArr: any = [];
+		const splicePointsCartographicArr: any = [];
+		splicePointsFeatures.forEach((feature) => {
+			const coordinates = feature.geometry.coordinates;
+			splicePointsArr.push(coordinates[0]);
+			const c3 = Cesium.Cartesian3.fromDegrees(coordinates[0][0], coordinates[0][1]);
+			splicePointsCartographicArr.push(Cesium.Cartographic.fromCartesian(c3));
+		});
+		profile.arrPoint = splicePointsArr;
+		// 在地形上获取高度
+		const sampleTerrainMostDetailed = await Cesium.sampleTerrainMostDetailed(viewer.terrainProvider, splicePointsCartographicArr);
+		sampleTerrainMostDetailed.forEach((cartographic) => {
+			profile.arrHB.push(cartographic.height);
+		});
 		return profile;
 	}
 	//计算两点间的距离
@@ -278,22 +293,20 @@ class ProfileAnalyse {
 					let a = "";
 					if (0 == e.length) return a;
 					e[0].value;
-					console.log(e);
 					const r = t[e[0].dataIndex];
-					console.log(r);
 					return (a +=
-						"所在位置&nbsp;" +
-						this.strFormat(r.x) +
-						"," +
-						this.strFormat(r.y) +
+						"所在位置&nbsp;经度" +
+						this.strFormat(r[0]) +
+						",纬度" +
+						this.strFormat(r[1]) +
 						"<br />距起点&nbsp;<label>" +
-						// haoutil.str.formatLength(e[0].axisValue) +
+						e[0].axisValue +
 						"</label><br />" +
 						e[0].seriesName +
 						"&nbsp;<label style='color:" +
 						e[0].color +
 						";'>" +
-						// haoutil.str.formatLength(e[0].value) +
+						e[0].value +
 						"</label><br />");
 				},
 			},
@@ -350,11 +363,14 @@ class ProfileAnalyse {
 				},
 			],
 		};
+		if (document.getElementById("profileAnalyse-echarts")) {
+			document.getElementById("profileAnalyse-echarts")!.innerHTML = "";
+		}
 		const echartsDiv = document.createElement("div");
 		echartsDiv.style.width = "calc(100% - 200px)";
 		echartsDiv.style.height = "300px";
 		echartsDiv.style.position = "absolute";
-		echartsDiv.style.bottom = "0";
+		echartsDiv.style.bottom = "100px";
 		echartsDiv.style.right = "0";
 		echartsDiv.id = "profileAnalyse-echarts";
 		document.getElementById("mapContainer")!.appendChild(echartsDiv);
