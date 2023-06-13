@@ -51,6 +51,7 @@
 				</template>
 				<el-menu-item-group>
 					<el-menu-item index="4-1" @click="spaceAnalysis('4-1')">剖面分析</el-menu-item>
+					<el-menu-item index="4-2" @click="spaceAnalysis('4-2')">地表透明(地下模式)</el-menu-item>
 				</el-menu-item-group>
 			</el-sub-menu>
 			<el-menu-item index="5" @click="createDitheringBillboard">
@@ -268,7 +269,46 @@ const spaceAnalysis = function (type: string) {
 		case "4-1":
 			profileAnalyse();
 			break;
+		case "4-2":
+			surfaceAlpha();
+			break;
 	}
+};
+const surfaceAlpha = async function () {
+	window.viewer.scene.screenSpaceCameraController.enableCollisionDetection = false;
+	window.viewer.scene.globe.translucency.enabled = true;
+	window.viewer.scene.globe.depthTestAgainstTerrain = true;
+	// window.viewer.scene.globe.baseColor = Cesium.Color.WHITE; //改变空球的颜色
+	// window.viewer.scene.globe.translucency.frontFaceAlphaByDistance = new Cesium.NearFarScalar(400.0, 0.5, 8000, 0.9);
+	const pipeTileset = await Cesium.Cesium3DTileset.fromUrl("https://data.mars3d.cn/3dtiles/max-piping/tileset.json");
+	window.viewer.zoomTo(pipeTileset);
+	// 将3d tiles离地高度抬升100米
+	let cartographic = Cesium.Cartographic.fromCartesian(pipeTileset.boundingSphere.center);
+
+	let surface = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, 0.0);
+
+	let offset = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, -20.0);
+
+	let translation = Cesium.Cartesian3.subtract(offset, surface, new Cesium.Cartesian3());
+
+	pipeTileset.modelMatrix = Cesium.Matrix4.fromTranslation(translation);
+	window.viewer.scene.primitives.add(pipeTileset);
+	// window.viewer.zoomTo(
+	// 	window.viewer.entities.add({
+	// 		id: `box`,
+	// 		name: `box`,
+	// 		position: Cesium.Cartesian3.fromDegrees(116, 39, -300),
+	// 		box: {
+	// 			dimensions: new Cesium.Cartesian3(10000, 10000, 6000),
+	// 			material: Cesium.Color.fromCssColorString("#ffffff"), //转换颜色
+	// 			outline: false,
+	// 			outlineColor: Cesium.Color.BLACK,
+	// 		},
+	// 	})
+	// );
+
+	const gui = new dat.GUI();
+	gui.add(window.viewer.scene.globe.translucency, "frontFaceAlpha").step(0.05).min(0).max(1);
 };
 
 const profileAnalyse = function () {
