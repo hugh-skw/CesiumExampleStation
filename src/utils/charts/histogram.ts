@@ -3,8 +3,8 @@ export function histogram({ position }: { position: any }) {
 	const viewer = window.viewer;
 	let height = 0;
 	const maxHeight = Math.random() * 10000;
-	const material = { r: 0.2, g: 0.2, b: 0.2 };
-	const color = Cesium.Color.fromCssColorString("rgb(" + 255 * material.r + "," + 255 * material.g + "," + 255 * material.b + ")");
+	const material = { r: 0.4, g: 0.4, b: 0.4 };
+	// const color = Cesium.Color.fromCssColorString("rgb(" + 255 * material.r + "," + 255 * material.g + "," + 255 * material.b + ")");
 	// console.log(Cesium.Color.fromCssColorString());
 	const labelEntity = viewer.entities.add({
 		position: Cesium.Cartesian3.fromDegrees(position[0], position[1], 100),
@@ -21,9 +21,9 @@ export function histogram({ position }: { position: any }) {
 			extrudedHeight: new Cesium.CallbackProperty(() => {
 				if (height < maxHeight) {
 					height += 100;
-					material.r += 0.01;
-					material.g += 0.02;
-					material.b += 0.001;
+					// material.r += 0.002;
+					material.g += 0.005;
+					// material.b += 0.001;
 					(entity.ellipse as any).material = Cesium.Color.fromCssColorString(
 						"rgb(" + 255 * material.r + "," + 255 * material.g + "," + 255 * material.b + ")"
 					);
