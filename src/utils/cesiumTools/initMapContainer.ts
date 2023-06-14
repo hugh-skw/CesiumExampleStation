@@ -1,5 +1,5 @@
 import * as Cesium from "cesium";
-export async function initMapContainer() {
+export async function initMapContainer(options: any) {
 	const mapContainer = document.getElementById("mapContainer");
 	if (mapContainer) {
 		mapContainer.innerHTML = "";
@@ -16,7 +16,9 @@ export async function initMapContainer() {
 			{}
 		),
 	});
-	viewer.terrainProvider = await new (Cesium.createWorldTerrainAsync as any)();
+	if (options.isTerrain) {
+		viewer.terrainProvider = await new (Cesium.createWorldTerrainAsync as any)();
+	}
 	viewer.scene.globe.depthTestAgainstTerrain = true;
 	viewer.imageryLayers.addImageryProvider(
 		new Cesium.UrlTemplateImageryProvider({

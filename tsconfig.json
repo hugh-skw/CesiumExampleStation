@@ -27,7 +27,8 @@
 		"src/**/*.vue",
 		"src/utils/shaders/index.ts",
 		"src/utils/shaders/parabolaFlowInit.js",
-		"*/*.ts"
+		"*/*.ts",
+		"src/utils/charts/echartsLayer.js"
 	],
 	"references": [{ "path": "./tsconfig.node.json" }],
 

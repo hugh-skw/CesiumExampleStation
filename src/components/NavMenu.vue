@@ -40,10 +40,15 @@
 					<el-menu-item index="2-1" @click="load3DTileset('2-1')">3dtiles模型</el-menu-item>
 				</el-menu-item-group>
 			</el-sub-menu>
-			<el-menu-item index="3">
-				<i class="iconfont icon-layer menuItab" />
-				<template #title>图层加载</template>
-			</el-menu-item>
+			<el-sub-menu index="3">
+				<template #title>
+					<i class="iconfont icon-layer menuItab" />
+					<span>统计图</span>
+				</template>
+				<el-menu-item-group>
+					<el-menu-item index="3-1" @click="charts('3-1')">柱状统计图</el-menu-item>
+				</el-menu-item-group>
+			</el-sub-menu>
 			<el-sub-menu index="4">
 				<template #title>
 					<i class="iconfont icon-layer menuItab" />
@@ -130,7 +135,9 @@ import ZThree from "@/utils/threejs/publicFunctions";
 import * as dat from "dat.gui";
 import { initMapContainer } from "@/utils/cesiumTools/initMapContainer";
 import { ProfileAnalyse } from "@/utils/spaceAnalysis/analysis";
+import { histogram } from "@/utils/charts/histogram";
 import { useRouter } from "vue-router";
+import { viewerCesium3DTilesInspectorMixin } from "cesium";
 const router = useRouter();
 
 const { proxy } = getCurrentInstance() as any; //获取上下文实例，ctx=vue2的this
@@ -293,26 +300,13 @@ const surfaceAlpha = async function () {
 
 	pipeTileset.modelMatrix = Cesium.Matrix4.fromTranslation(translation);
 	window.viewer.scene.primitives.add(pipeTileset);
-	// window.viewer.zoomTo(
-	// 	window.viewer.entities.add({
-	// 		id: `box`,
-	// 		name: `box`,
-	// 		position: Cesium.Cartesian3.fromDegrees(116, 39, -300),
-	// 		box: {
-	// 			dimensions: new Cesium.Cartesian3(10000, 10000, 6000),
-	// 			material: Cesium.Color.fromCssColorString("#ffffff"), //转换颜色
-	// 			outline: false,
-	// 			outlineColor: Cesium.Color.BLACK,
-	// 		},
-	// 	})
-	// );
 
 	const gui = new dat.GUI();
 	gui.add(window.viewer.scene.globe.translucency, "frontFaceAlpha").step(0.05).min(0).max(1);
 };
 
 const profileAnalyse = function () {
-	const viewer = initMapContainer();
+	const viewer = initMapContainer({ isTerrain: true });
 	const analyse = new ProfileAnalyse();
 	analyse.createDom();
 };
@@ -627,6 +621,28 @@ const add3dTiles = async () => {
 				t.modelMatrix = Cesium.Matrix4.fromTranslation(translation);
 			});
 	});
+};
+
+// 统计图
+const charts = (type: string) => {
+	switch (type) {
+		case "3-1":
+			initMapContainer({});
+			window.viewer.camera.setView({
+				destination: new Cesium.Cartesian3(-2185898.038561797, 4417873.90145229, 4056394.6926352344),
+				orientation: {
+					heading: 0.008903271091888598,
+					pitch: -0.3538448522549178,
+					roll: 0.0007919083641771962,
+				},
+			});
+			histogram({ position: [116.408481, 39.924949] });
+			histogram({ position: [116.368481, 39.904949] });
+			histogram({ position: [116.348481, 39.934949] });
+			histogram({ position: [116.308481, 39.954949] });
+			histogram({ position: [116.268481, 39.924949] });
+			break;
+	}
 };
 // 加载图片,异步方法
 function loadImage(url: string) {
