@@ -47,6 +47,7 @@
 				</template>
 				<el-menu-item-group>
 					<el-menu-item index="3-1" @click="charts('3-1')">柱状统计图</el-menu-item>
+					<el-menu-item index="3-2" @click="charts('3-2')">结合ECharts</el-menu-item>
 				</el-menu-item-group>
 			</el-sub-menu>
 			<el-sub-menu index="4">
@@ -137,7 +138,9 @@ import { initMapContainer } from "@/utils/cesiumTools/initMapContainer";
 import { ProfileAnalyse } from "@/utils/spaceAnalysis/analysis";
 import { histogram } from "@/utils/charts/histogram";
 import { useRouter } from "vue-router";
-import { viewerCesium3DTilesInspectorMixin } from "cesium";
+// import { viewerCesium3DTilesInspectorMixin } from "cesium";
+import EchartsLayer from "@/utils/charts/echartsLayer";
+import echartsDataJson from "@/utils/charts/echartsData";
 const router = useRouter();
 
 const { proxy } = getCurrentInstance() as any; //获取上下文实例，ctx=vue2的this
@@ -642,6 +645,12 @@ const charts = (type: string) => {
 			histogram({ position: [116.308481, 39.954949] });
 			histogram({ position: [116.268481, 39.924949] });
 			break;
+		case "3-2":
+			initMapContainer({}).then((viewer) => {
+				new EchartsLayer(viewer, echartsDataJson);
+			});
+
+			break;
 	}
 };
 // 加载图片,异步方法
@@ -772,7 +781,7 @@ const createDitheringBillboard = () => {
 		}
 		if (pick.id) {
 			let entity: Cesium.Entity = pick.id;
-			const position = <Cartesian3 | undefined>entity.position;
+			const position = entity.position;
 			bubble(entity.id + "-" + "popWindow", entity);
 			// window.viewer.entities.add({
 			// 	id: entity.id + "-" + "popWindow",
