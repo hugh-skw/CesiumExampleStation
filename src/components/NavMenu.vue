@@ -761,7 +761,7 @@ const createDitheringBillboard = () => {
 			}
 			return scale;
 		}, false);
-		entity.billboard!.pixelOffset = new Cesium.CallbackProperty(function (time, result) {
+		entity.billboard!.pixelOffset = new Cesium.CallbackProperty(function (time: any, result: any) {
 			if (rotationStatus === "right") {
 				y -= 0.16;
 			}
